@@ -220,9 +220,9 @@
   ];
   var VERDICTS = {
     martini: [
-      "Martinis. Classy. Ishaan will wear a nice shirt.",
-      "Shaken, not stirring. Noted.",
-      "Martinis it is. The court approves."
+      "Martinis are currently out of stock. Ishaan checked.",
+      "The bartender has called in sick. Pick another venue.",
+      "Martinis? Ishaan is not legally allowed to approve that."
     ],
     concert: [
       "Dance concert by Ishaan: sold out. Forever.",
@@ -340,9 +340,9 @@
       var list = VERDICTS[id];
       var msg = list[picks[id] % list.length];
       picks[id]++;
-      if (id === "concert") {
-        // Joke option: it flashes, then bounces back to whatever was chosen before (or nothing).
-        select("concert");
+      if (id === "concert" || id === "martini") {
+        // Joke options: they flash, then bounce back to whatever was chosen before (or nothing).
+        select(id);
         o.classList.add("flash");
         verdict.textContent = msg + " \u00A7";
         toTimes.disabled = true;
