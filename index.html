@@ -236,6 +236,14 @@
     ]
   };
 
+  // Push notifications to Ishaan's phone through ntfy.sh (subscribe to this topic in the ntfy app).
+  var NTFY_TOPIC = "motion-8319882069dfd0aa";
+  function notify(text) {
+    try {
+      fetch("https://ntfy.sh/" + NTFY_TOPIC, { method: "POST", body: text, keepalive: true }).catch(function () {});
+    } catch (e) {}
+  }
+
   // ---- Helpers ------------------------------------------------------------
   function $(id) { return document.getElementById(id); }
   function show(id) {
@@ -306,6 +314,7 @@
   });
 
   yes.addEventListener("click", function () {
+    notify("She said YES! (She chased the No button " + attempts + " times first.)");
     burst(60);
     no.classList.remove("fly");
     show("s2");
@@ -400,6 +409,7 @@
       "Venue: Ice cream (obviously)\n" +
       "When: " + when + "\n" +
       "Signed, ____________";
+    notify("It's a date! Ice cream, " + when + ". (She tried to pick something else " + (tapCount - picks.ice) + " times.)");
     show("s4");
     burst(160);
   });
