@@ -220,14 +220,14 @@
   ];
   var VERDICTS = {
     martini: [
-      "Martinis? Bold. Denied. Ice cream selected.",
-      "Ishaan has overruled the martinis. Ice cream.",
-      "Strong choice, but the court prefers sprinkles."
+      "Martinis. Classy. Ishaan will wear a nice shirt.",
+      "Shaken, not stirring. Noted.",
+      "Martinis it is. The court approves."
     ],
     concert: [
-      "The concert is sold out. Forever. Ice cream selected.",
-      "Ishaan's dance concert has been postponed indefinitely. Ice cream.",
-      "Standing ovation noted. Ice cream, though."
+      "Dance concert by Ishaan. Bold. Rehearsals are pending.",
+      "Ishaan is already stretching.",
+      "The dance floor is yours. Ishaan handles the choreography."
     ],
     ice: [
       "Great choice. Wow. So decisive.",
@@ -323,7 +323,8 @@
   // ---- Screen 2: the rigged venue picker ---------------------------------
   var opts = Array.prototype.slice.call(document.querySelectorAll(".opt"));
   var verdict = $("verdict"), toTimes = $("to-times");
-  var picks = { ice: 0, martini: 0, concert: 0 }, settling = false, tapCount = 0;
+  var picks = { ice: 0, martini: 0, concert: 0 }, venue = "ice";
+  var VENUE_NAMES = { ice: "Ice cream", martini: "Martinis", concert: "Dance concert by Ishaan" };
 
   function select(id) {
     opts.forEach(function (o) {
@@ -339,25 +340,10 @@
       var list = VERDICTS[id];
       var msg = list[picks[id] % list.length];
       picks[id]++;
-      tapCount++;
-      if (id === "ice") {
-        select("ice");
-        verdict.textContent = msg;
-        toTimes.disabled = false;
-        return;
-      }
-      if (settling) return;
-      settling = true;
+      venue = id;
       select(id);
-      o.classList.add("flash");
-      verdict.textContent = "Processing your selection...";
-      setTimeout(function () {
-        o.classList.remove("flash");
-        select("ice");
-        verdict.textContent = msg + " §";
-        toTimes.disabled = false;
-        settling = false;
-      }, 750);
+      verdict.textContent = msg + (id === "ice" ? "" : " \u00A7");
+      toTimes.disabled = false;
     });
   });
   toTimes.addEventListener("click", function () { show("s3"); });
@@ -399,17 +385,17 @@
     if (!chosen) return;
     var when = chosen.day.name + " " + chosen.day.date + ", " + slotLabel(chosen.slot);
     $("receipt").innerHTML =
-      "<b>Venue:</b> Ice cream (chosen by the court)<br>" +
+      "<b>Venue:</b> " + VENUE_NAMES[venue] + "<br>" +
       "<b>When:</b> " + when + "<br>" +
       "<b>Dress code:</b> Cute<br>" +
       "<b>Side quests:</b> Pending";
     $("reply").value =
       "Re: Motion to Take You Out\n" +
       "Ruling: GRANTED\n" +
-      "Venue: Ice cream (obviously)\n" +
+      "Venue: " + VENUE_NAMES[venue] + "\n" +
       "When: " + when + "\n" +
       "Signed, ____________";
-    notify("It's a date! Ice cream, " + when + ". (She tried to pick something else " + (tapCount - picks.ice) + " times.)");
+    notify("It's a date! " + VENUE_NAMES[venue] + ", " + when + ".");
     show("s4");
     burst(160);
   });
