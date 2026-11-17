@@ -225,9 +225,9 @@
       "Martinis it is. The court approves."
     ],
     concert: [
-      "Dance concert by Ishaan. Bold. Rehearsals are pending.",
-      "Ishaan is already stretching.",
-      "The dance floor is yours. Ishaan handles the choreography."
+      "Dance concert by Ishaan: sold out. Forever.",
+      "The concert has been postponed indefinitely. Pick a venue that exists.",
+      "Standing ovation noted, but the choreography isn't ready. Pick another."
     ],
     ice: [
       "Great choice. Wow. So decisive.",
@@ -323,7 +323,7 @@
   // ---- Screen 2: the rigged venue picker ---------------------------------
   var opts = Array.prototype.slice.call(document.querySelectorAll(".opt"));
   var verdict = $("verdict"), toTimes = $("to-times");
-  var picks = { ice: 0, martini: 0, concert: 0 }, venue = "ice";
+  var picks = { ice: 0, martini: 0, concert: 0 }, venue = null;
   var VENUE_NAMES = { ice: "Ice cream", martini: "Martinis", concert: "Dance concert by Ishaan" };
 
   function select(id) {
@@ -340,13 +340,26 @@
       var list = VERDICTS[id];
       var msg = list[picks[id] % list.length];
       picks[id]++;
+      if (id === "concert") {
+        // Joke option: it flashes, then bounces back to whatever was chosen before (or nothing).
+        select("concert");
+        o.classList.add("flash");
+        verdict.textContent = msg + " \u00A7";
+        toTimes.disabled = true;
+        setTimeout(function () {
+          o.classList.remove("flash");
+          select(venue);
+          toTimes.disabled = !venue;
+        }, 900);
+        return;
+      }
       venue = id;
       select(id);
       verdict.textContent = msg + (id === "ice" ? "" : " \u00A7");
       toTimes.disabled = false;
     });
   });
-  toTimes.addEventListener("click", function () { show("s3"); });
+  toTimes.addEventListener("click", function () { if (venue) { show("s3"); } });
 
   // ---- Screen 3: the time slots ---------------------------------------------
   var chosen = null;
