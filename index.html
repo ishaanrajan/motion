@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motion to Take You Out</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Nunito:wght@500;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* Layout idea: one phone-width "court filing" card on a strawberry-milk backdrop, one screen at a time. */
+  :root {
+    --milk: #ffd6e3;
+    --paper: #fffaf7;
+    --berry: #3a0f26;
+    --cherry: #ff3d77;
+    --mint: #a8ecd0;
+    --butter: #ffe9a8;
+    --display: "Bagel Fat One", "Arial Rounded MT Bold", system-ui, sans-serif;
+    --body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --legal: "Courier Prime", "Courier New", monospace;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--milk);
+    background-image: radial-gradient(circle at 20% 10%, #fff0f5 0, transparent 45%), radial-gradient(circle at 90% 90%, #ffc2d6 0, transparent 40%);
+    color: var(--berry);
+    font-family: var(--body);
+    font-weight: 700;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+  }
+  #hearts { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  #hearts svg { position: absolute; bottom: -40px; opacity: .5; animation: rise linear infinite; }
+  @keyframes rise { to { transform: translateY(-115vh) rotate(25deg); } }
+
+  .app { position: relative; z-index: 1; min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px 16px; }
+  .card {
+    width: 100%; max-width: 420px; background: var(--paper); border: 3px solid var(--berry);
+    border-radius: 24px; box-shadow: 6px 6px 0 var(--berry); padding: 20px 20px 18px;
+  }
+  .caption {
+    display: flex; justify-content: space-between; gap: 8px; font-family: var(--legal); font-size: 11px;
+    letter-spacing: .04em; text-transform: uppercase; border-bottom: 2px dashed var(--berry); padding-bottom: 8px; margin-bottom: 16px;
+  }
+  .screen[hidden] { display: none; }
+  .screen { animation: fade .35s ease both; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  h1 { font-family: var(--display); font-weight: 400; font-size: 2.1rem; line-height: 1.05; margin: 0 0 8px; text-wrap: balance; }
+  h1 .pop { color: var(--cherry); }
+  p { margin: 0 0 12px; line-height: 1.4; }
+  .sub { font-size: 1rem; min-height: 2.8em; }
+  .fine { font-family: var(--legal); font-weight: 400; font-size: 11.5px; line-height: 1.45; border-top: 1px solid var(--berry); padding-top: 10px; margin-top: 18px; opacity: .85; }
+  .fine b { font-weight: 700; }
+
+  .face { display: block; margin: 4px auto 6px; width: 120px; height: 120px; }
+
+  button { font: inherit; color: inherit; cursor: pointer; }
+  button:focus-visible { outline: 3px solid var(--berry); outline-offset: 3px; }
+  .btn {
+    border: 3px solid var(--berry); background: var(--cherry); color: #fff; font-family: var(--display); font-weight: 400;
+    font-size: 1.15rem; padding: 12px 26px; border-radius: 999px; box-shadow: 3px 3px 0 var(--berry);
+    transition: transform .12s, box-shadow .12s;
+  }
+  .btn:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--berry); }
+  .btn:disabled { background: #e9d3db; color: #9b7d89; cursor: not-allowed; box-shadow: 3px 3px 0 #b99aa7; border-color: #b99aa7; }
+  .btn.wide { width: 100%; margin-top: 14px; }
+
+  /* Screen 1 */
+  .answers { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; min-height: 120px; margin-top: 10px; --s: 1; }
+  #yes { font-size: calc(1.15rem * var(--s)); padding: calc(12px * var(--s)) calc(26px * var(--s)); max-width: 100%; background: var(--cherry); transition: none; }
+  #no {
+    background: var(--paper); color: var(--berry); font-family: var(--body); font-weight: 800; font-size: 1rem;
+    padding: 10px 18px; border: 3px solid var(--berry); border-radius: 999px; box-shadow: 2px 2px 0 var(--berry);
+    touch-action: none; user-select: none; -webkit-user-select: none; white-space: nowrap;
+  }
+  #no.fly { position: fixed; z-index: 20; transition: left .22s cubic-bezier(.3,1.6,.5,1), top .22s cubic-bezier(.3,1.6,.5,1), transform .2s; }
+
+  /* Screen 2 */
+  .options { display: grid; gap: 10px; margin-top: 12px; }
+  .opt {
+    display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 12px; text-align: left; width: 100%;
+    background: #fff; border: 3px solid var(--berry); border-radius: 18px; padding: 10px 14px 10px 10px; box-shadow: 3px 3px 0 var(--berry);
+    transition: background .2s, transform .12s;
+  }
+  .opt svg { width: 56px; height: 56px; }
+  .opt .t { font-family: var(--display); font-size: 1.15rem; line-height: 1.1; }
+  .opt .d { display: block; font-size: .8rem; font-weight: 700; opacity: .75; margin-top: 2px; }
+  .opt .tick { width: 26px; height: 26px; border: 3px solid var(--berry); border-radius: 50%; background: #fff; display: grid; place-items: center; }
+  .opt.sel { background: var(--mint); }
+  .opt.sel .tick { background: var(--cherry); }
+  .opt.sel .tick::after { content: ""; width: 8px; height: 13px; border: solid #fff; border-width: 0 3px 3px 0; transform: rotate(45deg) translate(-1px, -1px); }
+  .opt.flash { background: var(--butter); animation: wob .45s; }
+  @keyframes wob { 20% { transform: rotate(-2deg); } 40% { transform: rotate(2deg); } 60% { transform: rotate(-1.5deg); } 80% { transform: rotate(1deg); } }
+  #verdict { min-height: 3.2em; margin: 12px 0 0; padding: 8px 12px; background: var(--butter); border: 2px dashed var(--berry); border-radius: 12px; font-size: .92rem; }
+
+  /* Screen 3 */
+  .day { margin-top: 14px; }
+  .day h2 { font-family: var(--display); font-weight: 400; font-size: 1.15rem; margin: 0 0 8px; display: flex; justify-content: space-between; align-items: baseline; }
+  .day h2 small { font-family: var(--legal); font-size: .72rem; font-weight: 700; }
+  .slots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .slot { background: #fff; border: 3px solid var(--berry); border-radius: 14px; padding: 10px 6px; font-weight: 800; font-size: .95rem; box-shadow: 2px 2px 0 var(--berry); }
+  .slot[aria-pressed="true"] { background: var(--cherry); color: #fff; }
+
+  /* Screen 4 */
+  .stamp {
+    display: inline-block; font-family: var(--display); color: var(--cherry); border: 4px solid var(--cherry); border-radius: 10px; padding: 2px 12px;
+    transform: rotate(-6deg); font-size: 1.2rem; letter-spacing: .06em; margin-bottom: 10px; animation: slam .45s cubic-bezier(.2,1.6,.4,1) both;
+  }
+  @keyframes slam { from { opacity: 0; scale: 2.2; } to { opacity: 1; scale: 1; } }
+  .receipt { background: #fff; border: 2px dashed var(--berry); border-radius: 14px; padding: 12px 14px; font-family: var(--legal); font-weight: 400; font-size: .9rem; line-height: 1.7; }
+  .receipt b { font-weight: 700; }
+  textarea { width: 100%; margin-top: 12px; border: 2px solid var(--berry); border-radius: 12px; padding: 10px; font-family: var(--legal); font-size: .8rem; background: #fff; color: var(--berry); resize: none; }
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 30; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .screen, .stamp, #hearts svg, .opt.flash { animation: none; }
+    #no.fly { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div id="hearts" aria-hidden="true"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<main class="app">
+  <div class="card">
+    <div class="caption"><span>Motion for a Date</span><span>Case No. 11-20-26-IC</span></div>
+
+    <!-- 1. The question -->
+    <section class="screen" id="s1">
+      <svg class="face" viewBox="0 0 120 120" role="img" aria-label="A hopeful little heart with big eyes">
+        <path d="M60 104C20 76 10 52 10 36c0-14 11-24 24-24 11 0 21 6 26 16 5-10 15-16 26-16 13 0 24 10 24 24 0 16-10 40-50 68z" fill="#ff3d77" stroke="#3a0f26" stroke-width="5" stroke-linejoin="round"/>
+        <circle cx="44" cy="52" r="8" fill="#fff" stroke="#3a0f26" stroke-width="3"/><circle cx="76" cy="52" r="8" fill="#fff" stroke="#3a0f26" stroke-width="3"/>
+        <circle cx="46" cy="54" r="4" fill="#3a0f26"/><circle cx="78" cy="54" r="4" fill="#3a0f26"/>
+        <path d="M50 70q10 10 20 0" fill="none" stroke="#3a0f26" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <h1>Will you go on a <span class="pop">date</span> with me?</h1>
+      <p class="sub" id="sub">Please respond within 3 to 5 business seconds.</p>
+      <div class="answers" id="answers">
+        <button class="btn" id="yes" type="button">Yes</button>
+        <button id="no" type="button">No</button>
+      </div>
+      <p class="fine"><b>*</b> The "No" button is currently out of office and cannot be reached for comment. Declining is not supported in your jurisdiction.</p>
+    </section>
+
+    <!-- 2. The venue -->
+    <section class="screen" id="s2" hidden>
+      <h1>Choose your <span class="pop">venue</span>.</h1>
+      <p>Three exciting options. Take your time. Think it over.</p>
+      <div class="options" id="options">
+        <button class="opt" type="button" data-id="ice" aria-pressed="false">
+          <svg viewBox="0 0 56 56" aria-hidden="true"><path d="M18 26l10 26 10-26z" fill="#f2b56b" stroke="#3a0f26" stroke-width="3" stroke-linejoin="round"/><path d="M22 34l8 4M24 42l8 4" stroke="#3a0f26" stroke-width="2" stroke-linecap="round"/><circle cx="28" cy="20" r="12" fill="#ff8fb3" stroke="#3a0f26" stroke-width="3"/><circle cx="28" cy="7" r="4" fill="#ff3d77" stroke="#3a0f26" stroke-width="2.5"/></svg>
+          <span><span class="t">Ice cream</span><span class="d">Cones. Sprinkles. Zero regrets.</span></span><span class="tick"></span>
+        </button>
+        <button class="opt" type="button" data-id="martini" aria-pressed="false">
+          <svg viewBox="0 0 56 56" aria-hidden="true"><path d="M8 10h40L28 32z" fill="#d7f5e8" stroke="#3a0f26" stroke-width="3" stroke-linejoin="round"/><path d="M28 32v16M18 49h20" stroke="#3a0f26" stroke-width="3" stroke-linecap="round"/><circle cx="34" cy="16" r="3.5" fill="#6bbf5a" stroke="#3a0f26" stroke-width="2"/><path d="M26 22l12-14" stroke="#3a0f26" stroke-width="2.5" stroke-linecap="round"/></svg>
+          <span><span class="t">Martinis&dagger;</span><span class="d">Fancy. Shaken, not stirring.</span></span><span class="tick"></span>
+        </button>
+        <button class="opt" type="button" data-id="concert" aria-pressed="false">
+          <svg viewBox="0 0 56 56" aria-hidden="true"><rect x="20" y="6" width="16" height="26" rx="8" fill="#ffe9a8" stroke="#3a0f26" stroke-width="3"/><path d="M12 28c0 10 7 16 16 16s16-6 16-16M28 44v8M20 52h16" fill="none" stroke="#3a0f26" stroke-width="3" stroke-linecap="round"/><path d="M24 14h8M24 20h8" stroke="#3a0f26" stroke-width="2" stroke-linecap="round"/></svg>
+          <span><span class="t">Dance concert by Ishaan</span><span class="d">One night only. Sold out.</span></span><span class="tick"></span>
+        </button>
+      </div>
+      <p id="verdict" aria-live="polite">Tap the one you want.</p>
+      <button class="btn wide" id="to-times" type="button" disabled>Confirm my choice</button>
+      <p class="fine">
+        <b>&dagger;</b> Presented for illustrative purposes only.<br>
+        <b>&sect;</b> Ishaan reserves the right to call a side quest audible at any time, without notice, consideration, or refund of vibes.
+      </p>
+    </section>
+
+    <!-- 3. The schedule -->
+    <section class="screen" id="s3" hidden>
+      <h1>Pick your <span class="pop">hour</span>.</h1>
+      <p>Each slot is a one-hour installment. Choose wisely, or at random.</p>
+      <div id="days"></div>
+      <button class="btn wide" id="lock" type="button" disabled>Lock it in</button>
+      <p class="fine"><b>*</b> Times are subject to Ishaan's side quest audibles. Ishaan will arrive five minutes early and act like it's a coincidence.</p>
+    </section>
+
+    <!-- 4. Done -->
+    <section class="screen" id="s4" hidden>
+      <span class="stamp">Motion granted</span>
+      <h1>It's a <span class="pop">date</span>.</h1>
+      <div class="receipt" id="receipt"></div>
+      <p style="margin-top:12px">One last thing: paste this reply into the DM so it's legally binding.</p>
+      <textarea id="reply" rows="5" readonly aria-label="Your reply to copy"></textarea>
+      <button class="btn wide" id="copy" type="button">Copy my reply</button>
+      <p class="fine"><b>*</b> No refunds. No take-backs. Side quests pending.</p>
+    </section>
+  </div>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- Edit these to change the plan ------------------------------------
+  var DAYS = [
+    { name: "Friday", date: "Nov 20", slots: [[8, 9], [9, 10], [10, 11]] },
+    { name: "Saturday", date: "Nov 21", slots: [[7, 8], [8, 9], [9, 10], [10, 11]] },
+    { name: "Sunday", date: "Nov 22", slots: [[7, 8], [8, 9], [9, 10], [10, 11]] }
+  ];
+
+  var NO_LABELS = ["No", "Are you sure?", "Too slow", "Nice try", "Objection!", "Not today", "Try again", "lol no", "Overruled", "Still no", "Nope"];
+  var NO_SUBS = [
+    "Please respond within 3 to 5 business seconds.",
+    "That button seems to have a mind of its own.",
+    "Did the No button just move? Weird.",
+    "The court notes you are chasing a button.",
+    "Your Honor, the defendant is being very cute about this.",
+    "Sustained. The Yes button looks bigger, though.",
+    "At this point, Yes is basically the only option.",
+    "The No button has filed for a restraining order.",
+    "It's okay. Yes is right there, and it's huge."
+  ];
+  var VERDICTS = {
+    martini: [
+      "Martinis? Bold. Denied. Ice cream selected.",
+      "Ishaan has overruled the martinis. Ice cream.",
+      "Strong choice, but the court prefers sprinkles."
+    ],
+    concert: [
+      "The concert is sold out. Forever. Ice cream selected.",
+      "Ishaan's dance concert has been postponed indefinitely. Ice cream.",
+      "Standing ovation noted. Ice cream, though."
+    ],
+    ice: [
+      "Great choice. Wow. So decisive.",
+      "Ice cream, again? The court respects the commitment.",
+      "Confirmed. You can stop now."
+    ]
+  };
+
+  // ---- Helpers ------------------------------------------------------------
+  function $(id) { return document.getElementById(id); }
+  function show(id) {
+    ["s1", "s2", "s3", "s4"].forEach(function (s) { $(s).hidden = (s !== id); });
+    window.scrollTo(0, 0);
+  }
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Floating hearts
+  (function () {
+    var box = $("hearts");
+    var svg = '<svg viewBox="0 0 24 22" width="W" height="H"><path d="M12 21C2 14 1 9 1 6c0-3 2-5 5-5 3 0 5 2 6 4 1-2 3-4 6-4 3 0 5 2 5 5 0 3-1 8-11 15z" fill="#ff7aa2"/></svg>';
+    for (var i = 0; i < 14; i++) {
+      var size = 14 + Math.random() * 26;
+      var wrap = document.createElement("div");
+      wrap.innerHTML = svg.replace("W", size).replace("H", size * 0.92);
+      var el = wrap.firstChild;
+      el.style.left = (Math.random() * 100) + "%";
+      el.style.animationDuration = (12 + Math.random() * 14) + "s";
+      el.style.animationDelay = (-Math.random() * 20) + "s";
+      box.appendChild(el);
+    }
+  })();
+
+  // ---- Screen 1: the dodgy No button -----------------------------------
+  var yes = $("yes"), no = $("no"), answers = $("answers"), sub = $("sub");
+  var attempts = 0, lastDodge = 0;
+
+  function overlaps(x, y, w, h, r, pad) {
+    return x < r.right + pad && x + w > r.left - pad && y < r.bottom + pad && y + h > r.top - pad;
+  }
+
+  function dodge(ev) {
+    if (ev && ev.cancelable) ev.preventDefault();
+    var now = Date.now();
+    if (now - lastDodge < 200) return;
+    lastDodge = now;
+    attempts++;
+
+    // Yes grows, No shrinks and changes its mind about its own name.
+    var s = Math.min(1 + attempts * 0.1, 1.8);
+    answers.style.setProperty("--s", s);
+    no.textContent = NO_LABELS[Math.min(attempts, NO_LABELS.length - 1)];
+    sub.textContent = NO_SUBS[Math.min(attempts, NO_SUBS.length - 1)];
+    no.style.transform = "scale(" + Math.max(0.6, 1 - attempts * 0.05) + ")";
+
+    var cur = no.getBoundingClientRect();
+    if (!no.classList.contains("fly")) {
+      no.style.left = cur.left + "px";
+      no.style.top = cur.top + "px";
+      no.classList.add("fly");
+      void no.offsetWidth;
+    }
+    var yr = yes.getBoundingClientRect();
+    var bw = no.offsetWidth, bh = no.offsetHeight;
+    var pad = 12, vw = window.innerWidth, vh = window.innerHeight;
+    var x, y, tries = 0;
+    do {
+      x = pad + Math.random() * Math.max(1, vw - bw - pad * 2);
+      y = pad + Math.random() * Math.max(1, vh - bh - pad * 2);
+      tries++;
+    } while (tries < 60 && (overlaps(x, y, bw, bh, yr, 40) || Math.hypot(x - cur.left, y - cur.top) < 120));
+    no.style.left = x + "px";
+    no.style.top = y + "px";
+  }
+  ["pointerenter", "pointerdown", "touchstart", "mouseover", "focus", "click"].forEach(function (t) {
+    no.addEventListener(t, dodge, { passive: false });
+  });
+
+  yes.addEventListener("click", function () {
+    burst(60);
+    no.classList.remove("fly");
+    show("s2");
+  });
+
+  // ---- Screen 2: the rigged venue picker ---------------------------------
+  var opts = Array.prototype.slice.call(document.querySelectorAll(".opt"));
+  var verdict = $("verdict"), toTimes = $("to-times");
+  var picks = { ice: 0, martini: 0, concert: 0 }, settling = false, tapCount = 0;
+
+  function select(id) {
+    opts.forEach(function (o) {
+      var on = o.getAttribute("data-id") === id;
+      o.classList.toggle("sel", on);
+      o.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
+  opts.forEach(function (o) {
+    o.addEventListener("click", function () {
+      var id = o.getAttribute("data-id");
+      var list = VERDICTS[id];
+      var msg = list[picks[id] % list.length];
+      picks[id]++;
+      tapCount++;
+      if (id === "ice") {
+        select("ice");
+        verdict.textContent = msg;
+        toTimes.disabled = false;
+        return;
+      }
+      if (settling) return;
+      settling = true;
+      select(id);
+      o.classList.add("flash");
+      verdict.textContent = "Processing your selection...";
+      setTimeout(function () {
+        o.classList.remove("flash");
+        select("ice");
+        verdict.textContent = msg + " §";
+        toTimes.disabled = false;
+        settling = false;
+      }, 750);
+    });
+  });
+  toTimes.addEventListener("click", function () { show("s3"); });
+
+  // ---- Screen 3: the time slots ---------------------------------------------
+  var chosen = null;
+  function fmt(h) { return h + " PM"; }
+  function slotLabel(sl) { return sl[0] + " to " + sl[1] + " PM"; }
+
+  var daysBox = $("days");
+  DAYS.forEach(function (d, di) {
+    var wrap = document.createElement("div");
+    wrap.className = "day";
+    var h = document.createElement("h2");
+    h.innerHTML = d.name + " <small>" + d.date + "</small>";
+    wrap.appendChild(h);
+    var grid = document.createElement("div");
+    grid.className = "slots";
+    d.slots.forEach(function (sl, si) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "slot";
+      b.id = "slot-" + di + "-" + si;
+      b.setAttribute("aria-pressed", "false");
+      b.textContent = slotLabel(sl);
+      b.addEventListener("click", function () {
+        Array.prototype.forEach.call(document.querySelectorAll(".slot"), function (x) { x.setAttribute("aria-pressed", "false"); });
+        b.setAttribute("aria-pressed", "true");
+        chosen = { day: d, slot: sl };
+        $("lock").disabled = false;
+      });
+      grid.appendChild(b);
+    });
+    wrap.appendChild(grid);
+    daysBox.appendChild(wrap);
+  });
+
+  $("lock").addEventListener("click", function () {
+    if (!chosen) return;
+    var when = chosen.day.name + " " + chosen.day.date + ", " + slotLabel(chosen.slot);
+    $("receipt").innerHTML =
+      "<b>Venue:</b> Ice cream (chosen by the court)<br>" +
+      "<b>When:</b> " + when + "<br>" +
+      "<b>Dress code:</b> Cute<br>" +
+      "<b>Side quests:</b> Pending";
+    $("reply").value =
+      "Re: Motion to Take You Out\n" +
+      "Ruling: GRANTED\n" +
+      "Venue: Ice cream (obviously)\n" +
+      "When: " + when + "\n" +
+      "Signed, ____________";
+    show("s4");
+    burst(160);
+  });
+
+  $("copy").addEventListener("click", function () {
+    var ta = $("reply"), btn = $("copy");
+    function done() { btn.textContent = "Copied. Now paste it in the DM"; }
+    function fallback() {
+      ta.focus(); ta.select();
+      try { if (document.execCommand("copy")) { done(); return; } } catch (e) {}
+      btn.textContent = "Press and hold the text to copy it";
+    }
+    try {
+      navigator.clipboard.writeText(ta.value).then(done, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  // ---- Confetti ---------------------------------------------------------------
+  var cv = $("confetti"), cx = cv.getContext("2d"), parts = [], raf = null;
+  function burst(n) {
+    if (reduce) return;
+    cv.width = window.innerWidth; cv.height = window.innerHeight;
+    var colors = ["#ff3d77", "#ffe9a8", "#a8ecd0", "#ffffff", "#3a0f26", "#ff8fb3"];
+    for (var i = 0; i < n; i++) {
+      parts.push({
+        x: cv.width / 2, y: cv.height * 0.45,
+        vx: (Math.random() - 0.5) * 12, vy: -Math.random() * 12 - 3,
+        w: 6 + Math.random() * 6, h: 8 + Math.random() * 8,
+        r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4,
+        c: colors[(Math.random() * colors.length) | 0], life: 110 + Math.random() * 60
+      });
+    }
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+  function tick() {
+    cx.clearRect(0, 0, cv.width, cv.height);
+    parts = parts.filter(function (p) { return p.life > 0 && p.y < cv.height + 20; });
+    parts.forEach(function (p) {
+      p.vy += 0.3; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.life--;
+      cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c;
+      cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); cx.restore();
+    });
+    if (parts.length) { raf = requestAnimationFrame(tick); }
+    else { raf = null; cx.clearRect(0, 0, cv.width, cv.height); }
+  }
+})();
+</script>
+</body>
+</html>
