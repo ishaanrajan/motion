@@ -101,7 +101,7 @@
 
     <section class="screen" id="intro">
       <h1>Welcome to the <span class="hl">Ishaan Onboarding Survey</span>.</h1>
-      <p>Congrats, you've been selected to get to know me better. It's six questions and takes about two minutes.</p>
+      <p>Congrats, you've been selected to get to know me better. It's eight questions and takes about two minutes.</p>
       <p class="note">Please answer honestly. Responses will be used against you (affectionately).</p>
       <button class="btn wide" id="start" type="button">Begin onboarding</button>
     </section>
@@ -162,11 +162,20 @@
       answer: function (sel, opts) { return sel.map(function (i) { return opts[i]; }).join(" + "); }
     },
     {
-      key: "Trek", type: "single",
-      title: "What would I trek five days for?",
-      opts: ["A really good view", "A plate of dal in a stranger's kitchen", "Both, obviously"],
+      key: "Violin", type: "single",
+      title: "Ishaan played violin for 14 years. What did he think he'd become?",
+      opts: ["A concert violinist", "A very tired violinist", "A cat-cafe DJ"],
       reveal: function (i) {
-        return i === 2 ? "Correct. Ishaan would also accept a dal with a view." : (i === 1 ? "Close. Add a view and you're at full marks." : "Nice, but a view with no snack at the end? Ishaan sulks.");
+        return i === 0 ? "Correct. Fourteen years of practice and a dream of Carnegie Hall. The orchestra's loss, the debugger's gain."
+          : "Close, but the official answer is concert violinist. He was serious. There was a plan. There were recitals.";
+      }
+    },
+    {
+      key: "Parents", type: "single",
+      title: "Ishaan disappointed his parents by studying engineering. They wanted him to study:",
+      opts: ["Medicine", "Law", "Anything ending in \"-ologist\"", "Whatever the cousin studied"],
+      reveal: function () {
+        return "The official answer is medicine. Unofficially, all of the above, delivered at every family dinner.";
       }
     },
     {
@@ -182,19 +191,29 @@
       answer: function (v) { return v < 34 ? "short and sweet" : (v < 67 ? "reasonable" : "send help"); }
     },
     {
-      key: "DJ name", type: "single",
+      key: "DJ name", type: "text", skip: false,
       title: "Pick my DJ name.",
-      opts: ["Afro House Arrest", "DJ Bike Lane", "Ishaan.mp3", "Sir Scoops-a-Lot"],
-      reveal: function () { return "Excellent choice. It's printed on the business cards now. The cards are very small and very legal."; }
+      placeholder: "DJ ...",
+      reveal: function (t) { return "\u201C" + t + "\u201D has been added to the lineup. Business cards are on order. They are very small and very legal."; },
+      answer: function (t) { return t; }
     },
     {
-      key: "Court food", type: "text",
+      key: "Court food", type: "text", skip: true, skipLabel: "I plead the fifth",
       title: "Your turn. What's the one food you'd defend in court?",
       placeholder: "Your honor, it's...",
       reveal: function (t) {
         return t ? "Noted. Ishaan will test this claim personally and report back to the jury." : "Pleading the fifth. Ishaan respects it and will order for you.";
       },
       answer: function (t) { return t || "pleaded the fifth"; }
+    },
+    {
+      key: "Biggest fear", type: "single",
+      title: "Ishaan's biggest fear is:",
+      opts: ["Spiders", "Public speaking", "A woman who is right and knows it", "Wasting a good meal"],
+      reveal: function (i) {
+        return i === 2 ? "Correct. Especially one who also orders better than him."
+          : "Nice try. The correct answer is a woman who is right and knows it. Especially one who also orders better than him.";
+      }
     },
     {
       key: "Rating", type: "single",
@@ -229,7 +248,8 @@
     $("qhint").textContent = q.hint || "";
     $("qhint").hidden = !q.hint;
     $("reveal").hidden = true;
-    $("skipwrap").hidden = (q.type !== "text");
+    $("skipwrap").hidden = (q.type !== "text" || !q.skip);
+    $("skip").textContent = q.skipLabel || "I plead the fifth";
     var action = $("action");
     action.textContent = "Lock it in";
     action.disabled = true;
