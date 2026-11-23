@@ -113,6 +113,8 @@
   svg.chart text { font-family: var(--body); font-weight: 600; }
   .seg { display: flex; gap: 2px; height: 28px; }
   .seg > div { height: 28px; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: .78rem; font-weight: 700; color: #fff; min-width: 0; white-space: nowrap; }
+  .seg { display: flex; gap: 2px; height: 34px; }
+  .seg > div { height: 34px; border-radius: 4px; display: flex; align-items: center; padding-left: 10px; font-size: .86rem; font-weight: 700; color: #fff; min-width: 0; white-space: nowrap; }
   .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: .78rem; color: var(--ink); font-weight: 600; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
@@ -200,8 +202,9 @@
 
       <div class="panel">
         <h2>What Ishaan will be thinking about</h2>
-        <p class="sub">Share of his attention on the date. Does not need to add up to 100.</p>
-        <div class="rows" id="think"></div>
+        <p class="sub">Share of his attention on the date. Adds up to 165%. Ishaan does not do math on dates.</p>
+        <div class="seg" id="seg" role="img" aria-label="What Ishaan will be thinking about: you, 100 percent. Also the food 40 percent, not saying something weird 15 percent, bikes 10 percent."></div>
+        <div class="legend" id="seglegend"></div>
       </div>
 
       <details class="data">
@@ -464,6 +467,7 @@
     ["Tolerance for Drake talk", 71], ["Ordering decisiveness", 36], ["Playlist overlap", 2]
   ];
   var THINK = [["You", 100], ["The food", 40], ["Not saying something weird", 15], ["Bikes", 10]];
+  var THINK_COL = ["#eb6834", "#2a78d6", "#1baf7a", "#eda100"];
 
   function buildBars(boxId, data, unit, tipSuffix) {
     var box = $(boxId);
@@ -504,9 +508,27 @@
     });
   }
 
+  function buildSeg() {
+    var seg = $("seg"), leg = $("seglegend");
+    seg.innerHTML = ""; leg.innerHTML = "";
+    var b = document.createElement("div");
+    b.style.flex = "1 1 0"; b.style.background = THINK_COL[0];
+    b.setAttribute("data-tip", "You: 100%");
+    b.textContent = "You 100%";
+    seg.appendChild(b);
+    THINK.forEach(function (t, i) {
+      var item = document.createElement("span");
+      var sw = document.createElement("i"); sw.style.background = THINK_COL[i];
+      item.appendChild(sw);
+      item.appendChild(document.createTextNode(i === 0 ? "You (100%)" : t[0] + " (" + t[1] + "%)"));
+      leg.appendChild(item);
+    });
+    bindTips(seg);
+  }
+
   function buildAnalysis() {
     buildBars("cats", CATS, "", " out of 100");
-    buildBars("think", THINK, "%", "% of his attention");
+    buildSeg();
     buildTables();
   }
 
