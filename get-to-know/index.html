@@ -101,7 +101,7 @@
 
     <section class="screen" id="intro">
       <h1>Welcome to the <span class="hl">Ishaan Onboarding Survey</span>.</h1>
-      <p>Congrats, you've been selected to get to know me better. It's eight questions and takes about two minutes.</p>
+      <p>Congrats, you've been selected to get to know me better. It's four questions and takes about a minute.</p>
       <p class="note">Please answer honestly. Responses will be used against you (affectionately).</p>
       <button class="btn wide" id="start" type="button">Begin onboarding</button>
     </section>
@@ -145,37 +145,12 @@
   // ---- The questions -------------------------------------------------------
   var QUESTIONS = [
     {
-      key: "Saturday morning", type: "multi",
-      title: "It's Saturday morning. What am I most likely doing?",
-      hint: "Select all that apply.",
-      opts: [
-        "Sleeping in until noon",
-        "Cycling up a hill for no reason",
-        "Hunting for a home-cooked meal no tourist has found",
-        "Remixing something nobody asked for"
-      ],
-      reveal: function (sel) {
-        if (sel.indexOf(0) !== -1) return "Sleeping in? Bold of you. Ishaan's alarm has never been consulted.";
-        if (sel.length === 3) return "Perfect score. Suspiciously perfect. Do you read my diary?";
-        return "Partial credit. The right answer is every option except the first.";
-      },
-      answer: function (sel, opts) { return sel.map(function (i) { return opts[i]; }).join(" + "); }
-    },
-    {
       key: "Violin", type: "single",
-      title: "Ishaan played violin for 14 years. What did he think he'd become?",
-      opts: ["A concert violinist", "A very tired violinist", "A cat-cafe DJ"],
+      title: "Ishaan played violin for 14 years, then disappointed his parents by studying engineering. What did he secretly want to be?",
+      opts: ["A classical violinist", "A doctor, like his parents wanted", "A professional bike courier", "A DJ"],
       reveal: function (i) {
-        return i === 0 ? "Correct. Fourteen years of practice and a dream of Carnegie Hall. The orchestra's loss, the debugger's gain."
-          : "Close, but the official answer is concert violinist. He was serious. There was a plan. There were recitals.";
-      }
-    },
-    {
-      key: "Parents", type: "single",
-      title: "Ishaan disappointed his parents by studying engineering. They wanted him to study:",
-      opts: ["Medicine", "Law", "Anything ending in \"-ologist\"", "Whatever the cousin studied"],
-      reveal: function () {
-        return "The official answer is medicine. Unofficially, all of the above, delivered at every family dinner.";
+        return i === 0 ? "Correct. A classical violinist. Fourteen years of practice, one engineering degree, and parents who wanted medicine anyway."
+          : "Nope. A classical violinist. Fourteen years of practice, one engineering degree, and parents who wanted medicine anyway.";
       }
     },
     {
@@ -198,15 +173,6 @@
       answer: function (t) { return t; }
     },
     {
-      key: "Court food", type: "text", skip: true, skipLabel: "I plead the fifth",
-      title: "Your turn. What's the one food you'd defend in court?",
-      placeholder: "Your honor, it's...",
-      reveal: function (t) {
-        return t ? "Noted. Ishaan will test this claim personally and report back to the jury." : "Pleading the fifth. Ishaan respects it and will order for you.";
-      },
-      answer: function (t) { return t || "pleaded the fifth"; }
-    },
-    {
       key: "Biggest fear", type: "single",
       title: "Ishaan's biggest fear is:",
       opts: ["Spiders", "Public speaking", "A woman who is right and knows it", "Wasting a good meal"],
@@ -214,12 +180,6 @@
         return i === 2 ? "Correct. Especially one who also orders better than him."
           : "Nice try. The correct answer is a woman who is right and knows it. Especially one who also orders better than him.";
       }
-    },
-    {
-      key: "Rating", type: "single",
-      title: "Last one. How's this going so far?",
-      opts: ["Cute, keep going", "Suspiciously charming", "Ishaan owes me ice cream"],
-      reveal: function () { return "Noted. Ishaan will make good on all three."; }
     }
   ];
 
