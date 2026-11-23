@@ -84,6 +84,8 @@
   .receipt { margin: 14px 0 4px; padding: 12px 14px; background: #fff; border: 2px dashed var(--ink); border-radius: 14px; font-size: .88rem; line-height: 1.6; }
   .receipt b { font-weight: 700; }
   .cc { font-size: .8rem; opacity: .8; margin-top: 10px; }
+  .wedq label { display: block; font-family: var(--hand); font-size: 1.25rem; color: var(--tomato); margin-top: 10px; }
+  .wedq textarea { margin-top: 2px; }
 
   @media (prefers-reduced-motion: reduce) { .screen { animation: none; } .meter i { transition: none; } }
 </style>
@@ -102,7 +104,7 @@
 
     <section class="screen" id="intro">
       <h1>Welcome to the <span class="hl">Ishaan Onboarding Survey</span>.</h1>
-      <p>Congrats, you've been selected to get to know me better. It's <span id="qcount">a few</span> questions and takes about a minute.</p>
+      <p>Congrats, you've been selected to get to know me better. It's <span id="qcount">a few</span> questions plus a bonus round, and takes about two minutes.</p>
       <p class="note">Please answer honestly. Responses will be used against you (affectionately).</p>
       <button class="btn wide" id="start" type="button">Begin onboarding</button>
     </section>
@@ -115,6 +117,22 @@
       <div class="bubble" id="reveal" hidden></div>
       <button class="btn wide" id="action" type="button" disabled>Lock it in</button>
       <p class="cc" id="skipwrap" hidden><button class="btn ghost" id="skip" type="button">I plead the fifth</button></p>
+    </section>
+
+    <section class="screen" id="wed" hidden>
+      <p class="qno">Bonus round</p>
+      <h1>3 questions you want Ishaan to answer on <span class="hl">Wednesday</span></h1>
+      <p class="hint">He will answer all of them honestly. He has been warned.</p>
+      <div class="wedq">
+        <label for="wq0">Question 1</label>
+        <textarea id="wq0" rows="2" maxlength="140" placeholder="Ask me anything..."></textarea>
+        <label for="wq1">Question 2</label>
+        <textarea id="wq1" rows="2" maxlength="140" placeholder="Go on, make it a good one..."></textarea>
+        <label for="wq2">Question 3</label>
+        <textarea id="wq2" rows="2" maxlength="140" placeholder="Or a chaotic one..."></textarea>
+      </div>
+      <button class="btn wide" id="wsubmit" type="button" disabled>Submit my questions</button>
+      <p class="cc"><button class="btn ghost" id="wskip" type="button">I'll ask in person</button></p>
     </section>
 
     <section class="screen" id="end" hidden>
@@ -208,14 +226,14 @@
   $("qcount").textContent = WORDS[QUESTIONS.length] || String(QUESTIONS.length);
   var idx = -1, state = "answering", picked = null, record = [];
   var dots = $("dots");
-  QUESTIONS.forEach(function () { dots.appendChild(document.createElement("i")); });
+  QUESTIONS.concat([null]).forEach(function () { dots.appendChild(document.createElement("i")); });
   function paintDots() {
     Array.prototype.forEach.call(dots.children, function (d, i) {
       d.className = i < idx ? "done" : (i === idx ? "now" : "");
     });
   }
   function show(id) {
-    ["intro", "q", "end"].forEach(function (s) { $(s).hidden = (s !== id); });
+    ["intro", "q", "wed", "end"].forEach(function (s) { $(s).hidden = (s !== id); });
     window.scrollTo(0, 0);
   }
 
@@ -316,19 +334,38 @@
     state = "revealed";
     var action = $("action");
     action.disabled = false;
-    action.textContent = idx === QUESTIONS.length - 1 ? "See my compatibility report" : "Next question";
+    action.textContent = idx === QUESTIONS.length - 1 ? "On to the bonus round" : "Next question";
   }
 
   $("start").addEventListener("click", function () { idx = 0; show("q"); render(); });
   $("action").addEventListener("click", function () {
     if (state === "answering") { lockIn(false); return; }
-    if (idx < QUESTIONS.length - 1) { idx++; render(); } else { finish(); }
+    if (idx < QUESTIONS.length - 1) { idx++; render(); } else { showBonus(); }
   });
   $("skip").addEventListener("click", function () { if (state === "answering") lockIn(true); });
 
+  // ---- Bonus round: her three questions for Wednesday ----------------------
+  var wedFields = [0, 1, 2].map(function (n) { return $("wq" + n); });
+  function wedAnswers() {
+    return wedFields.map(function (f) { return f.value.trim(); }).filter(function (v) { return v; });
+  }
+  wedFields.forEach(function (f) {
+    f.addEventListener("input", function () { $("wsubmit").disabled = wedAnswers().length === 0; });
+  });
+  function showBonus() {
+    idx = QUESTIONS.length;
+    paintDots();
+    show("wed");
+  }
+  $("wsubmit").addEventListener("click", function () {
+    wedAnswers().forEach(function (q, i) { record.push({ key: "Wednesday question " + (i + 1), value: q }); });
+    finish();
+  });
+  $("wskip").addEventListener("click", function () { finish(); });
+
   // ---- Finish ---------------------------------------------------------------
   function finish() {
-    idx = QUESTIONS.length;
+    idx = QUESTIONS.length + 1;
     paintDots();
     show("end");
     var rec = $("receipt");
