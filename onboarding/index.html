@@ -202,8 +202,8 @@
 
       <div class="panel">
         <h2>What Ishaan will be thinking about</h2>
-        <p class="sub">Share of his attention on the date. Adds up to 165%. Ishaan does not do math on dates.</p>
-        <div class="seg" id="seg" role="img" aria-label="What Ishaan will be thinking about: you, 100 percent. Also the food 40 percent, not saying something weird 15 percent, bikes 10 percent."></div>
+        <p class="sub">Share of his attention on the date. Adds up to 100%.</p>
+        <div class="seg" id="seg" role="img" aria-label="What Ishaan will be thinking about: you, 100 percent. The food, Drake and Uncle Prabhu, 0 percent each."></div>
         <div class="legend" id="seglegend"></div>
       </div>
 
@@ -466,7 +466,7 @@
     ["Banter", 98], ["Evil genius", 96], ["Dessert-splitting readiness", 94],
     ["Tolerance for Drake talk", 71], ["Ordering decisiveness", 36], ["Playlist overlap", 2]
   ];
-  var THINK = [["You", 100], ["The food", 40], ["Not saying something weird", 15], ["Bikes", 10]];
+  var THINK = [["You", 100], ["The food", 0], ["Drake", 0], ["Uncle Prabhu", 0]];
   var THINK_COL = ["#eb6834", "#2a78d6", "#1baf7a", "#eda100"];
 
   function buildBars(boxId, data, unit, tipSuffix) {
@@ -514,7 +514,7 @@
     var b = document.createElement("div");
     b.style.flex = "1 1 0"; b.style.background = THINK_COL[0];
     b.setAttribute("data-tip", "You: 100%");
-    b.textContent = "You 100%";
+    b.textContent = "You";
     seg.appendChild(b);
     THINK.forEach(function (t, i) {
       var item = document.createElement("span");
