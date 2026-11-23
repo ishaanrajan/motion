@@ -32,7 +32,7 @@
     -webkit-tap-highlight-color: transparent;
   }
   .app { min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px 16px; }
-  .card { width: 100%; max-width: 440px; background: var(--paper); border: 3px solid var(--ink); border-radius: 22px; box-shadow: 6px 6px 0 var(--ink); padding: 18px 20px 20px; position: relative; }
+  .card { width: 100%; max-width: 440px; background: var(--paper); border: 3px solid var(--ink); border-radius: 22px; box-shadow: 6px 6px 0 var(--ink); padding: 34px 20px 20px; position: relative; }
   .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; border-bottom: 2px dashed var(--ink); padding-bottom: 10px; margin-bottom: 14px; }
   .dots { display: flex; gap: 5px; }
   .dots i { width: 12px; height: 12px; border: 2px solid var(--ink); border-radius: 50%; background: #fff; display: block; }
@@ -78,15 +78,61 @@
 
   .bubble { margin-top: 12px; background: var(--mint); border: 3px solid var(--ink); border-radius: 16px; padding: 10px 14px; font-weight: 700; }
 
-  .score { font-family: var(--display); font-weight: 700; font-size: 3rem; line-height: 1; margin: 4px 0; }
-  .meter { height: 18px; border: 3px solid var(--ink); border-radius: 999px; background: #fff; overflow: hidden; }
-  .meter i { display: block; height: 100%; width: 0; background: var(--tomato); transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
   .receipt { margin: 14px 0 4px; padding: 12px 14px; background: #fff; border: 2px dashed var(--ink); border-radius: 14px; font-size: .88rem; line-height: 1.6; }
   .receipt b { font-weight: 700; }
   .cc { font-size: .8rem; opacity: .8; margin-top: 10px; }
   .wedq label { display: block; font-family: var(--hand); font-size: 1.25rem; color: var(--tomato); margin-top: 10px; }
   .wedq textarea { margin-top: 2px; }
 
+
+  /* Compatibility analysis (chart colors: categorical slots 1-4, validated; one-hue blue for ranked bars) */
+  :root { --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --track: #cde2fb; --grid: #e1e0d9; --axis: #c3c2b7; --muted: #6b6a66; --sec: #52514e; --good: #0ca30c; --warn: #fab219; --serious: #ec835a; --crit: #d03b3b; }
+  #end h1 { margin-bottom: 2px; }
+  .rep-sub { font-size: .85rem; color: var(--sec); margin: 0 0 12px; }
+  .conf { display: inline-block; font-family: var(--display); font-weight: 600; font-size: .72rem; letter-spacing: .12em; color: var(--tomato); border: 2px solid var(--tomato); border-radius: 6px; padding: 1px 8px; transform: rotate(-3deg); margin-bottom: 8px; }
+  .hero { padding: 4px 0 2px; }
+  .hero .lab { font-size: .85rem; color: var(--sec); font-weight: 700; }
+  .hero .big { font-family: var(--body); font-weight: 700; font-size: 4rem; line-height: 1; letter-spacing: -.02em; color: var(--ink); margin: 2px 0 8px; }
+  .meter { height: 14px; border: 0; border-radius: 999px; background: var(--track); overflow: hidden; }
+  .meter i { display: block; height: 100%; width: 0; background: var(--s1); border-radius: 999px; transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+  .kpi { border: 2px solid var(--ink); border-radius: 14px; padding: 8px 10px; background: #fff; }
+  .kpi .l { font-size: .72rem; color: var(--sec); font-weight: 700; line-height: 1.2; min-height: 2.4em; }
+  .kpi .v { font-weight: 700; font-size: 1.5rem; line-height: 1.1; margin-top: 4px; }
+  .panel { border: 2px solid var(--ink); border-radius: 16px; padding: 12px 12px 12px; margin: 12px 0; background: #fff; }
+  .panel h2 { font-family: var(--display); font-weight: 600; font-size: 1.05rem; line-height: 1.15; margin: 0 0 2px; }
+  .panel .sub { font-size: .78rem; color: var(--sec); margin: 0 0 10px; }
+  .rows { display: grid; gap: 9px; }
+  .crow { display: grid; grid-template-columns: 1fr; gap: 3px; }
+  .crow .n { font-size: .8rem; color: var(--ink); font-weight: 700; }
+  .crow .bar { display: flex; align-items: center; gap: 8px; }
+  .crow .trk { flex: 1; height: 14px; }
+  .crow .fill { height: 14px; background: var(--s1); border-radius: 0 4px 4px 0; }
+  .crow .val { font-size: .8rem; font-weight: 700; min-width: 2.4em; }
+  svg.chart { width: 100%; height: auto; display: block; }
+  svg.chart text { font-family: var(--body); font-weight: 600; }
+  .seg { display: flex; gap: 2px; height: 28px; }
+  .seg > div { height: 28px; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: .78rem; font-weight: 700; color: #fff; min-width: 0; white-space: nowrap; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: .78rem; color: var(--ink); font-weight: 600; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .legend i.dot { border-radius: 50%; width: 10px; height: 10px; }
+  .risk { display: grid; gap: 8px; }
+  .risk .r { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; font-size: .82rem; font-weight: 600; padding: 6px 0; border-top: 1px solid var(--grid); }
+  .risk .r:first-child { border-top: 0; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; font-size: .76rem; font-weight: 700; border: 2px solid var(--ink); border-radius: 999px; padding: 2px 9px 2px 6px; white-space: nowrap; }
+  .pill svg { width: 14px; height: 14px; flex: none; }
+  details.data { margin: 10px 0 4px; font-size: .8rem; }
+  details.data summary { cursor: pointer; font-weight: 700; padding: 4px 0; }
+  details.data table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: .78rem; }
+  details.data th, details.data td { text-align: left; padding: 3px 6px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  details.data caption { text-align: left; font-weight: 700; padding: 6px 0 2px; }
+  .verdict { text-align: center; margin: 16px 0 6px; }
+  .verdict .st { display: inline-block; font-family: var(--display); font-weight: 700; font-size: 1.25rem; color: var(--tomato); border: 4px solid var(--tomato); border-radius: 12px; padding: 4px 14px; transform: rotate(-4deg); letter-spacing: .04em; text-wrap: balance; }
+  .verdict p { font-size: .75rem; color: var(--sec); margin: 10px 0 0; }
+  #tip { position: fixed; z-index: 50; background: var(--ink); color: #fff; font-size: .78rem; font-weight: 700; padding: 5px 9px; border-radius: 8px; pointer-events: none; max-width: 240px; transform: translate(-50%, -100%); }
+  [data-tip]:focus-visible { outline: 3px solid var(--tomato); outline-offset: 2px; }
+  @media (max-width: 360px) { .kpis { grid-template-columns: 1fr 1fr; } }
   @media (prefers-reduced-motion: reduce) { .screen { animation: none; } .meter i { transition: none; } }
 </style>
 </head>
@@ -136,11 +182,63 @@
     </section>
 
     <section class="screen" id="end" hidden>
-      <h1>Onboarding <span class="hl">complete</span>.</h1>
-      <p>Your compatibility report is ready.</p>
-      <div class="score" id="score">0%</div>
-      <div class="meter"><i id="bar"></i></div>
-      <p class="cc">Margin of error: Ishaan's sense of direction.</p>
+      <span class="conf">CONFIDENTIAL</span>
+      <h1>Compatibility <span class="hl">Analysis</span></h1>
+      <p class="rep-sub">Prepared for: you. Prepared by: Ishaan's analytics department (Ishaan).</p>
+
+      <div class="hero">
+        <div class="lab">Overall compatibility</div>
+        <div class="big" id="score">0%</div>
+        <div class="meter" role="img" aria-label="Overall compatibility: 94 percent"><i id="bar"></i></div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="l">Banter quality</div><div class="v">98/100</div></div>
+        <div class="kpi"><div class="l">Snack synergy</div><div class="v">96%</div></div>
+        <div class="kpi"><div class="l">Second-date probability</div><div class="v">97%</div></div>
+      </div>
+
+      <div class="panel">
+        <h2>Compatibility by category</h2>
+        <p class="sub">Score out of 100, highest first</p>
+        <div class="rows" id="cats"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Projected awkwardness during the date</h2>
+        <p class="sub">Share of the table that feels awkward, by minute</p>
+        <div id="line"></div>
+      </div>
+
+      <div class="panel">
+        <h2>What Ishaan will be thinking about</h2>
+        <p class="sub">Share of attention during the date</p>
+        <div class="seg" id="seg" role="img" aria-label="What Ishaan will be thinking about: the food 40 percent, you 35 percent, not saying something weird 15 percent, bikes 10 percent"></div>
+        <div class="legend" id="seglegend"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Ishaan staring: your estimate vs reality</h2>
+        <p class="sub">Chance he stares at you the entire date</p>
+        <div id="dumb"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Risk register</h2>
+        <p class="sub">Reviewed by Ishaan, who is not at all biased</p>
+        <div class="risk" id="risk"></div>
+      </div>
+
+      <details class="data">
+        <summary>View the data as tables</summary>
+        <div id="tables"></div>
+      </details>
+
+      <div class="verdict">
+        <span class="st">Approved for a second date</span>
+        <p>This analysis is 100% scientific. Source: Ishaan.</p>
+      </div>
+
       <div class="receipt" id="receipt"></div>
       <p class="note">Heads up: Ishaan gets a notification with your answers. He will act surprised.</p>
       <textarea id="reply" rows="6" readonly aria-label="Your reply to copy"></textarea>
@@ -148,6 +246,7 @@
     </section>
   </div>
 </main>
+<div id="tip" hidden role="tooltip"></div>
 
 <script>
 (function () {
@@ -313,6 +412,7 @@
     var q = QUESTIONS[idx];
     var value = picked;
     if (q.type === "text" && forcedSkip) value = "";
+    if (q.key === "Staring") { stareGuess = value; }
     var msg = q.reveal(value);
     var shown;
     if (q.type === "single") shown = q.opts[value];
@@ -363,10 +463,200 @@
   });
   $("wskip").addEventListener("click", function () { finish(); });
 
+
+  // ---- Compatibility analysis (all numbers are fixed on purpose) ----------
+  var stareGuess = null;
+  var tip = $("tip");
+  function showTip(e) {
+    var el = e.currentTarget, r = el.getBoundingClientRect();
+    tip.textContent = el.getAttribute("data-tip");
+    tip.hidden = false;
+    var x = Math.min(Math.max(r.left + r.width / 2, 130), window.innerWidth - 130);
+    tip.style.left = x + "px";
+    tip.style.top = Math.max(r.top - 8, 40) + "px";
+  }
+  function hideTip() { tip.hidden = true; }
+  function bindTips(root) {
+    Array.prototype.forEach.call(root.querySelectorAll("[data-tip]"), function (el) {
+      el.setAttribute("tabindex", "0");
+      el.addEventListener("pointerenter", showTip);
+      el.addEventListener("pointerleave", hideTip);
+      el.addEventListener("focus", showTip);
+      el.addEventListener("blur", hideTip);
+      el.addEventListener("click", showTip);
+    });
+  }
+  document.addEventListener("click", function (e) { if (!e.target.closest || !e.target.closest("[data-tip]")) hideTip(); });
+
+  var CATS = [
+    ["Banter", 98], ["Snack synergy", 96], ["Dessert-splitting readiness", 94],
+    ["Playlist overlap", 88], ["Tolerance for bike talk", 71], ["Restaurant decision speed", 36]
+  ];
+  var MINS = [0, 15, 30, 45, 60, 75, 90, 105, 120];
+  var AWK = [88, 72, 48, 28, 20, 14, 10, 8, 6];
+  var THINK = [["The food", 40, "#2a78d6", "#ffffff"], ["You", 35, "#eb6834", "#ffffff"], ["Not saying something weird", 15, "#1baf7a", "#ffffff"], ["Bikes", 10, "#eda100", "#0b0b0b"]];
+  var RISKS = [
+    ["Ishaan crying at a concert: 0%", "Low", "good"],
+    ["Drake lyrics sent at 2 AM", "Elevated", "warning"],
+    ["Ishaan ordering for the table", "High", "serious"],
+    ["Ishaan talking about food for too long", "High", "serious"],
+    ["Ishaan staring at you", "Critical", "critical"]
+  ];
+  var STATUS = { good: "#0ca30c", warning: "#fab219", serious: "#ec835a", critical: "#d03b3b" };
+  var ICONS = {
+    good: '<svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="#0ca30c"/><path d="M4 7.2l2 2 4-4.4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    warning: '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.2l6 11H1z" fill="#fab219"/><path d="M7 5.4v3.2M7 10.2v.2" stroke="#0b0b0b" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    serious: '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 .8L13.2 7 7 13.2.8 7z" fill="#ec835a"/><path d="M7 4.2v3.2M7 9.2v.2" stroke="#0b0b0b" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    critical: '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M4.4.8h5.2l3.6 3.6v5.2l-3.6 3.6H4.4L.8 9.6V4.4z" fill="#d03b3b"/><path d="M4.8 4.8l4.4 4.4M9.2 4.8L4.8 9.2" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>'
+  };
+
+  function buildCats() {
+    var box = $("cats");
+    box.innerHTML = "";
+    CATS.forEach(function (c) {
+      var row = document.createElement("div");
+      row.className = "crow";
+      row.setAttribute("data-tip", c[0] + ": " + c[1] + " out of 100");
+      var n = document.createElement("div"); n.className = "n"; n.textContent = c[0];
+      var bar = document.createElement("div"); bar.className = "bar";
+      var trk = document.createElement("div"); trk.className = "trk";
+      var fill = document.createElement("div"); fill.className = "fill"; fill.style.width = c[1] + "%";
+      trk.appendChild(fill);
+      var val = document.createElement("div"); val.className = "val"; val.textContent = c[1];
+      bar.appendChild(trk); bar.appendChild(val);
+      row.appendChild(n); row.appendChild(bar);
+      box.appendChild(row);
+    });
+    bindTips(box);
+  }
+
+  function buildLine() {
+    var L = 34, R = 346, T = 14, B = 168;
+    function X(m) { return L + (m / 120) * (R - L); }
+    function Y(p) { return B - (p / 100) * (B - T); }
+    var s = '<svg class="chart" viewBox="0 0 360 214" role="img" aria-label="Awkwardness falls from 88 percent at the start of the date to 6 percent at two hours">';
+    [0, 50, 100].forEach(function (g) {
+      s += '<line x1="' + L + '" x2="' + R + '" y1="' + Y(g) + '" y2="' + Y(g) + '" stroke="' + (g === 0 ? "#c3c2b7" : "#e1e0d9") + '" stroke-width="1"/>';
+      s += '<text x="' + (L - 6) + '" y="' + (Y(g) + 4) + '" font-size="11" text-anchor="end" fill="#6b6a66">' + g + '%</text>';
+    });
+    [0, 30, 60, 90, 120].forEach(function (m) {
+      s += '<text x="' + X(m) + '" y="184" font-size="11" text-anchor="middle" fill="#6b6a66">' + m + '</text>';
+    });
+    s += '<text x="' + ((L + R) / 2) + '" y="204" font-size="11" text-anchor="middle" fill="#52514e">Minutes into the date</text>';
+    var d = "", area = "";
+    MINS.forEach(function (m, i) { d += (i ? " L" : "M") + X(m) + " " + Y(AWK[i]); });
+    area = d + " L" + X(120) + " " + B + " L" + X(0) + " " + B + " Z";
+    s += '<path d="' + area + '" fill="#2a78d6" fill-opacity="0.10"/>';
+    s += '<path d="' + d + '" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+    // annotation markers (2px surface ring), sparing labels
+    [[30, "Ice cream arrives", "start", 8, -8], [60, "First real laugh", "middle", 0, 22]].forEach(function (a) {
+      var i = MINS.indexOf(a[0]);
+      s += '<circle cx="' + X(a[0]) + '" cy="' + Y(AWK[i]) + '" r="5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>';
+      s += '<text x="' + (X(a[0]) + a[3]) + '" y="' + (Y(AWK[i]) + a[4]) + '" font-size="11" text-anchor="' + a[2] + '" fill="#0b0b0b">' + a[1] + '</text>';
+    });
+    s += '<circle cx="' + X(120) + '" cy="' + Y(AWK[8]) + '" r="5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>';
+    s += '<text x="' + (X(120) - 8) + '" y="' + (Y(AWK[8]) - 9) + '" font-size="11" text-anchor="end" fill="#0b0b0b">6%</text>';
+    // hover/tap targets, larger than the marks
+    MINS.forEach(function (m, i) {
+      s += '<circle cx="' + X(m) + '" cy="' + Y(AWK[i]) + '" r="13" fill="transparent" data-tip="' + m + ' min: ' + AWK[i] + '% awkward"/>';
+    });
+    s += '</svg>';
+    var box = $("line");
+    box.innerHTML = s;
+    bindTips(box);
+  }
+
+  function buildSeg() {
+    var seg = $("seg"), leg = $("seglegend");
+    seg.innerHTML = ""; leg.innerHTML = "";
+    THINK.forEach(function (t) {
+      var b = document.createElement("div");
+      b.style.flex = t[1] + " 1 0";
+      b.style.background = t[2];
+      b.style.color = t[3];
+      b.setAttribute("data-tip", t[0] + ": " + t[1] + "%");
+      if (t[1] >= 15) b.textContent = t[1] + "%";
+      seg.appendChild(b);
+      var item = document.createElement("span");
+      var sw = document.createElement("i"); sw.style.background = t[2];
+      item.appendChild(sw);
+      item.appendChild(document.createTextNode(t[1] >= 15 ? t[0] : t[0] + " (" + t[1] + "%)"));
+      leg.appendChild(item);
+    });
+    bindTips(seg);
+  }
+
+  function buildDumb() {
+    var g = stareGuess === null ? 50 : stareGuess;
+    var L = 14, R = 346, y = 54;
+    function X(p) { return L + (p / 100) * (R - L); }
+    var s = '<svg class="chart" viewBox="0 0 360 100" role="img" aria-label="Your estimate of ' + g + ' percent versus the reality of 100 percent">';
+    s += '<line x1="' + L + '" x2="' + R + '" y1="' + y + '" y2="' + y + '" stroke="#e1e0d9" stroke-width="1"/>';
+    s += '<line x1="' + X(g) + '" x2="' + X(100) + '" y1="' + y + '" y2="' + y + '" stroke="#c3c2b7" stroke-width="2" stroke-linecap="round"/>';
+    var gx = Math.min(Math.max(X(g), 60), 300);
+    s += '<circle cx="' + X(g) + '" cy="' + y + '" r="6" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>';
+    s += '<text x="' + gx + '" y="' + (y - 14) + '" font-size="11" text-anchor="middle" fill="#0b0b0b">Your guess: ' + g + '%</text>';
+    s += '<circle cx="' + X(100) + '" cy="' + y + '" r="6" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>';
+    s += '<text x="' + (R - 4) + '" y="' + (y + 24) + '" font-size="11" text-anchor="end" fill="#0b0b0b">Reality: 100%</text>';
+    s += '<circle cx="' + X(g) + '" cy="' + y + '" r="14" fill="transparent" data-tip="Your guess: ' + g + '%"/>';
+    s += '<circle cx="' + X(100) + '" cy="' + y + '" r="14" fill="transparent" data-tip="Reality: 100%. He is terrible at hiding it."/>';
+    s += '</svg>';
+    s += '<div class="legend"><span><i class="dot" style="background:#2a78d6"></i>Your guess</span><span><i class="dot" style="background:#eb6834"></i>Reality</span></div>';
+    var box = $("dumb");
+    box.innerHTML = s;
+    bindTips(box);
+  }
+
+  function buildRisk() {
+    var box = $("risk");
+    box.innerHTML = "";
+    RISKS.forEach(function (r) {
+      var row = document.createElement("div");
+      row.className = "r";
+      var n = document.createElement("span"); n.textContent = r[0];
+      var pill = document.createElement("span"); pill.className = "pill";
+      pill.innerHTML = ICONS[r[2]];
+      pill.appendChild(document.createTextNode(r[1]));
+      row.appendChild(n); row.appendChild(pill);
+      box.appendChild(row);
+    });
+  }
+
+  function buildTables() {
+    function table(cap, head, rows) {
+      var t = '<table><caption>' + cap + '</caption><tr>' + head.map(function (x) { return '<th>' + x + '</th>'; }).join("") + '</tr>';
+      rows.forEach(function (r) { t += '<tr>' + r.map(function (x) { return '<td></td>'; }).join("") + '</tr>'; });
+      return t + '</table>';
+    }
+    var wrap = document.createElement("div");
+    function mk(cap, head, rows) {
+      var holder = document.createElement("div");
+      holder.innerHTML = table(cap, head, rows);
+      var trs = holder.querySelectorAll("tr");
+      rows.forEach(function (r, i) {
+        Array.prototype.forEach.call(trs[i + 1].children, function (td, j) { td.textContent = r[j]; });
+      });
+      wrap.appendChild(holder);
+    }
+    mk("Compatibility by category", ["Category", "Score"], CATS);
+    mk("Awkwardness during the date", ["Minute", "Awkward %"], MINS.map(function (m, i) { return [m, AWK[i]]; }));
+    mk("What Ishaan will be thinking about", ["Topic", "Share %"], THINK.map(function (t) { return [t[0], t[1]]; }));
+    mk("Staring", ["Measure", "Value %"], [["Your guess", stareGuess === null ? 50 : stareGuess], ["Reality", 100]]);
+    mk("Risk register", ["Item", "Level"], RISKS.map(function (r) { return [r[0], r[1]]; }));
+    var box = $("tables");
+    box.innerHTML = "";
+    box.appendChild(wrap);
+  }
+
+  function buildAnalysis() {
+    buildCats(); buildLine(); buildSeg(); buildDumb(); buildRisk(); buildTables();
+  }
+
   // ---- Finish ---------------------------------------------------------------
   function finish() {
     idx = QUESTIONS.length + 1;
     paintDots();
+    buildAnalysis();
     show("end");
     var rec = $("receipt");
     rec.innerHTML = "";
