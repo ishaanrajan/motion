@@ -192,12 +192,6 @@
         <div class="meter" role="img" aria-label="Overall compatibility: 94 percent"><i id="bar"></i></div>
       </div>
 
-      <div class="kpis">
-        <div class="kpi"><div class="l">Banter quality</div><div class="v">98/100</div></div>
-        <div class="kpi"><div class="l">Snack synergy</div><div class="v">96%</div></div>
-        <div class="kpi"><div class="l">Second-date probability</div><div class="v">97%</div></div>
-      </div>
-
       <div class="panel">
         <h2>Compatibility by category</h2>
         <p class="sub">Score out of 100, highest first</p>
@@ -205,28 +199,9 @@
       </div>
 
       <div class="panel">
-        <h2>Projected awkwardness during the date</h2>
-        <p class="sub">Share of the table that feels awkward, by minute</p>
-        <div id="line"></div>
-      </div>
-
-      <div class="panel">
         <h2>What Ishaan will be thinking about</h2>
-        <p class="sub">Share of attention during the date</p>
-        <div class="seg" id="seg" role="img" aria-label="What Ishaan will be thinking about: the food 40 percent, you 35 percent, not saying something weird 15 percent, bikes 10 percent"></div>
-        <div class="legend" id="seglegend"></div>
-      </div>
-
-      <div class="panel">
-        <h2>Ishaan staring: your estimate vs reality</h2>
-        <p class="sub">Chance he stares at you the entire date</p>
-        <div id="dumb"></div>
-      </div>
-
-      <div class="panel">
-        <h2>Risk register</h2>
-        <p class="sub">Reviewed by Ishaan, who is not at all biased</p>
-        <div class="risk" id="risk"></div>
+        <p class="sub">Share of his attention on the date. Does not need to add up to 100.</p>
+        <div class="rows" id="think"></div>
       </div>
 
       <details class="data">
@@ -236,13 +211,9 @@
 
       <div class="verdict">
         <span class="st">Approved for a second date</span>
-        <p>This analysis is 100% scientific. Source: Ishaan.</p>
+        <p>This analysis is 100% scientific. Source: Ishaan. Your answers have been sent to Ishaan.</p>
       </div>
 
-      <div class="receipt" id="receipt"></div>
-      <p class="note">Heads up: Ishaan gets a notification with your answers. He will act surprised.</p>
-      <textarea id="reply" rows="6" readonly aria-label="Your reply to copy"></textarea>
-      <button class="btn wide" id="copy" type="button">Copy my answers for the DM</button>
     </section>
   </div>
 </main>
@@ -490,39 +461,23 @@
 
   var CATS = [
     ["Banter", 98], ["Snack synergy", 96], ["Dessert-splitting readiness", 94],
-    ["Playlist overlap", 88], ["Tolerance for bike talk", 71], ["Restaurant decision speed", 36]
+    ["Tolerance for Drake talk", 71], ["Ordering decisiveness", 36], ["Playlist overlap", 2]
   ];
-  var MINS = [0, 15, 30, 45, 60, 75, 90, 105, 120];
-  var AWK = [88, 72, 48, 28, 20, 14, 10, 8, 6];
-  var THINK = [["The food", 40, "#2a78d6", "#ffffff"], ["You", 35, "#eb6834", "#ffffff"], ["Not saying something weird", 15, "#1baf7a", "#ffffff"], ["Bikes", 10, "#eda100", "#0b0b0b"]];
-  var RISKS = [
-    ["Ishaan crying at a concert: 0%", "Low", "good"],
-    ["Drake lyrics sent at 2 AM", "Elevated", "warning"],
-    ["Ishaan ordering for the table", "High", "serious"],
-    ["Ishaan talking about food for too long", "High", "serious"],
-    ["Ishaan staring at you", "Critical", "critical"]
-  ];
-  var STATUS = { good: "#0ca30c", warning: "#fab219", serious: "#ec835a", critical: "#d03b3b" };
-  var ICONS = {
-    good: '<svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="#0ca30c"/><path d="M4 7.2l2 2 4-4.4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    warning: '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.2l6 11H1z" fill="#fab219"/><path d="M7 5.4v3.2M7 10.2v.2" stroke="#0b0b0b" stroke-width="1.6" stroke-linecap="round"/></svg>',
-    serious: '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 .8L13.2 7 7 13.2.8 7z" fill="#ec835a"/><path d="M7 4.2v3.2M7 9.2v.2" stroke="#0b0b0b" stroke-width="1.6" stroke-linecap="round"/></svg>',
-    critical: '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M4.4.8h5.2l3.6 3.6v5.2l-3.6 3.6H4.4L.8 9.6V4.4z" fill="#d03b3b"/><path d="M4.8 4.8l4.4 4.4M9.2 4.8L4.8 9.2" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>'
-  };
+  var THINK = [["You", 100], ["The food", 40], ["Not saying something weird", 15], ["Bikes", 10]];
 
-  function buildCats() {
-    var box = $("cats");
+  function buildBars(boxId, data, unit, tipSuffix) {
+    var box = $(boxId);
     box.innerHTML = "";
-    CATS.forEach(function (c) {
+    data.forEach(function (c) {
       var row = document.createElement("div");
       row.className = "crow";
-      row.setAttribute("data-tip", c[0] + ": " + c[1] + " out of 100");
+      row.setAttribute("data-tip", c[0] + ": " + c[1] + tipSuffix);
       var n = document.createElement("div"); n.className = "n"; n.textContent = c[0];
       var bar = document.createElement("div"); bar.className = "bar";
       var trk = document.createElement("div"); trk.className = "trk";
       var fill = document.createElement("div"); fill.className = "fill"; fill.style.width = c[1] + "%";
       trk.appendChild(fill);
-      var val = document.createElement("div"); val.className = "val"; val.textContent = c[1];
+      var val = document.createElement("div"); val.className = "val"; val.textContent = c[1] + unit;
       bar.appendChild(trk); bar.appendChild(val);
       row.appendChild(n); row.appendChild(bar);
       box.appendChild(row);
@@ -530,126 +485,29 @@
     bindTips(box);
   }
 
-  function buildLine() {
-    var L = 34, R = 346, T = 14, B = 168;
-    function X(m) { return L + (m / 120) * (R - L); }
-    function Y(p) { return B - (p / 100) * (B - T); }
-    var s = '<svg class="chart" viewBox="0 0 360 214" role="img" aria-label="Awkwardness falls from 88 percent at the start of the date to 6 percent at two hours">';
-    [0, 50, 100].forEach(function (g) {
-      s += '<line x1="' + L + '" x2="' + R + '" y1="' + Y(g) + '" y2="' + Y(g) + '" stroke="' + (g === 0 ? "#c3c2b7" : "#e1e0d9") + '" stroke-width="1"/>';
-      s += '<text x="' + (L - 6) + '" y="' + (Y(g) + 4) + '" font-size="11" text-anchor="end" fill="#6b6a66">' + g + '%</text>';
-    });
-    [0, 30, 60, 90, 120].forEach(function (m) {
-      s += '<text x="' + X(m) + '" y="184" font-size="11" text-anchor="middle" fill="#6b6a66">' + m + '</text>';
-    });
-    s += '<text x="' + ((L + R) / 2) + '" y="204" font-size="11" text-anchor="middle" fill="#52514e">Minutes into the date</text>';
-    var d = "", area = "";
-    MINS.forEach(function (m, i) { d += (i ? " L" : "M") + X(m) + " " + Y(AWK[i]); });
-    area = d + " L" + X(120) + " " + B + " L" + X(0) + " " + B + " Z";
-    s += '<path d="' + area + '" fill="#2a78d6" fill-opacity="0.10"/>';
-    s += '<path d="' + d + '" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
-    // annotation markers (2px surface ring), sparing labels
-    [[30, "Ice cream arrives", "start", 8, -8], [60, "First real laugh", "middle", 0, 22]].forEach(function (a) {
-      var i = MINS.indexOf(a[0]);
-      s += '<circle cx="' + X(a[0]) + '" cy="' + Y(AWK[i]) + '" r="5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>';
-      s += '<text x="' + (X(a[0]) + a[3]) + '" y="' + (Y(AWK[i]) + a[4]) + '" font-size="11" text-anchor="' + a[2] + '" fill="#0b0b0b">' + a[1] + '</text>';
-    });
-    s += '<circle cx="' + X(120) + '" cy="' + Y(AWK[8]) + '" r="5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>';
-    s += '<text x="' + (X(120) - 8) + '" y="' + (Y(AWK[8]) - 9) + '" font-size="11" text-anchor="end" fill="#0b0b0b">6%</text>';
-    // hover/tap targets, larger than the marks
-    MINS.forEach(function (m, i) {
-      s += '<circle cx="' + X(m) + '" cy="' + Y(AWK[i]) + '" r="13" fill="transparent" data-tip="' + m + ' min: ' + AWK[i] + '% awkward"/>';
-    });
-    s += '</svg>';
-    var box = $("line");
-    box.innerHTML = s;
-    bindTips(box);
-  }
-
-  function buildSeg() {
-    var seg = $("seg"), leg = $("seglegend");
-    seg.innerHTML = ""; leg.innerHTML = "";
-    THINK.forEach(function (t) {
-      var b = document.createElement("div");
-      b.style.flex = t[1] + " 1 0";
-      b.style.background = t[2];
-      b.style.color = t[3];
-      b.setAttribute("data-tip", t[0] + ": " + t[1] + "%");
-      if (t[1] >= 15) b.textContent = t[1] + "%";
-      seg.appendChild(b);
-      var item = document.createElement("span");
-      var sw = document.createElement("i"); sw.style.background = t[2];
-      item.appendChild(sw);
-      item.appendChild(document.createTextNode(t[1] >= 15 ? t[0] : t[0] + " (" + t[1] + "%)"));
-      leg.appendChild(item);
-    });
-    bindTips(seg);
-  }
-
-  function buildDumb() {
-    var g = stareGuess === null ? 50 : stareGuess;
-    var L = 14, R = 346, y = 54;
-    function X(p) { return L + (p / 100) * (R - L); }
-    var s = '<svg class="chart" viewBox="0 0 360 100" role="img" aria-label="Your estimate of ' + g + ' percent versus the reality of 100 percent">';
-    s += '<line x1="' + L + '" x2="' + R + '" y1="' + y + '" y2="' + y + '" stroke="#e1e0d9" stroke-width="1"/>';
-    s += '<line x1="' + X(g) + '" x2="' + X(100) + '" y1="' + y + '" y2="' + y + '" stroke="#c3c2b7" stroke-width="2" stroke-linecap="round"/>';
-    var gx = Math.min(Math.max(X(g), 60), 300);
-    s += '<circle cx="' + X(g) + '" cy="' + y + '" r="6" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>';
-    s += '<text x="' + gx + '" y="' + (y - 14) + '" font-size="11" text-anchor="middle" fill="#0b0b0b">Your guess: ' + g + '%</text>';
-    s += '<circle cx="' + X(100) + '" cy="' + y + '" r="6" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>';
-    s += '<text x="' + (R - 4) + '" y="' + (y + 24) + '" font-size="11" text-anchor="end" fill="#0b0b0b">Reality: 100%</text>';
-    s += '<circle cx="' + X(g) + '" cy="' + y + '" r="14" fill="transparent" data-tip="Your guess: ' + g + '%"/>';
-    s += '<circle cx="' + X(100) + '" cy="' + y + '" r="14" fill="transparent" data-tip="Reality: 100%. He is terrible at hiding it."/>';
-    s += '</svg>';
-    s += '<div class="legend"><span><i class="dot" style="background:#2a78d6"></i>Your guess</span><span><i class="dot" style="background:#eb6834"></i>Reality</span></div>';
-    var box = $("dumb");
-    box.innerHTML = s;
-    bindTips(box);
-  }
-
-  function buildRisk() {
-    var box = $("risk");
-    box.innerHTML = "";
-    RISKS.forEach(function (r) {
-      var row = document.createElement("div");
-      row.className = "r";
-      var n = document.createElement("span"); n.textContent = r[0];
-      var pill = document.createElement("span"); pill.className = "pill";
-      pill.innerHTML = ICONS[r[2]];
-      pill.appendChild(document.createTextNode(r[1]));
-      row.appendChild(n); row.appendChild(pill);
-      box.appendChild(row);
-    });
-  }
-
   function buildTables() {
-    function table(cap, head, rows) {
-      var t = '<table><caption>' + cap + '</caption><tr>' + head.map(function (x) { return '<th>' + x + '</th>'; }).join("") + '</tr>';
-      rows.forEach(function (r) { t += '<tr>' + r.map(function (x) { return '<td></td>'; }).join("") + '</tr>'; });
-      return t + '</table>';
-    }
-    var wrap = document.createElement("div");
-    function mk(cap, head, rows) {
-      var holder = document.createElement("div");
-      holder.innerHTML = table(cap, head, rows);
-      var trs = holder.querySelectorAll("tr");
-      rows.forEach(function (r, i) {
-        Array.prototype.forEach.call(trs[i + 1].children, function (td, j) { td.textContent = r[j]; });
-      });
-      wrap.appendChild(holder);
-    }
-    mk("Compatibility by category", ["Category", "Score"], CATS);
-    mk("Awkwardness during the date", ["Minute", "Awkward %"], MINS.map(function (m, i) { return [m, AWK[i]]; }));
-    mk("What Ishaan will be thinking about", ["Topic", "Share %"], THINK.map(function (t) { return [t[0], t[1]]; }));
-    mk("Staring", ["Measure", "Value %"], [["Your guess", stareGuess === null ? 50 : stareGuess], ["Reality", 100]]);
-    mk("Risk register", ["Item", "Level"], RISKS.map(function (r) { return [r[0], r[1]]; }));
     var box = $("tables");
     box.innerHTML = "";
-    box.appendChild(wrap);
+    [["Compatibility by category", ["Category", "Score"], CATS],
+     ["What Ishaan will be thinking about", ["Topic", "Share %"], THINK]].forEach(function (t) {
+      var table = document.createElement("table");
+      var cap = document.createElement("caption"); cap.textContent = t[0]; table.appendChild(cap);
+      var hr = document.createElement("tr");
+      t[1].forEach(function (x) { var th = document.createElement("th"); th.textContent = x; hr.appendChild(th); });
+      table.appendChild(hr);
+      t[2].forEach(function (r) {
+        var tr = document.createElement("tr");
+        r.forEach(function (x) { var td = document.createElement("td"); td.textContent = x; tr.appendChild(td); });
+        table.appendChild(tr);
+      });
+      box.appendChild(table);
+    });
   }
 
   function buildAnalysis() {
-    buildCats(); buildLine(); buildSeg(); buildDumb(); buildRisk(); buildTables();
+    buildBars("cats", CATS, "", " out of 100");
+    buildBars("think", THINK, "%", "% of his attention");
+    buildTables();
   }
 
   // ---- Finish ---------------------------------------------------------------
@@ -658,18 +516,7 @@
     paintDots();
     buildAnalysis();
     show("end");
-    var rec = $("receipt");
-    rec.innerHTML = "";
-    record.forEach(function (r) {
-      var line = document.createElement("div");
-      var b = document.createElement("b");
-      b.textContent = r.key + ": ";
-      line.appendChild(b);
-      line.appendChild(document.createTextNode(r.value));
-      rec.appendChild(line);
-    });
     var text = "Ishaan Onboarding Survey: complete. Compatibility: 94%.\n" + record.map(function (r) { return r.key + ": " + r.value; }).join("\n");
-    $("reply").value = text;
     notify(text);
     var bar = $("bar"), score = $("score"), n = 0;
     requestAnimationFrame(function () { bar.style.width = "94%"; });
@@ -680,16 +527,6 @@
     }, 22);
   }
 
-  $("copy").addEventListener("click", function () {
-    var ta = $("reply"), btn = $("copy");
-    function done() { btn.textContent = "Copied. Now paste it in the DM"; }
-    function fallback() {
-      ta.focus(); ta.select();
-      try { if (document.execCommand("copy")) { done(); return; } } catch (e) {}
-      btn.textContent = "Press and hold the text to copy it";
-    }
-    try { navigator.clipboard.writeText(ta.value).then(done, fallback); } catch (e) { fallback(); }
-  });
 })();
 </script>
 </body>
