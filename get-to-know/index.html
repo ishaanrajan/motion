@@ -101,7 +101,7 @@
 
     <section class="screen" id="intro">
       <h1>Welcome to the <span class="hl">Ishaan Onboarding Survey</span>.</h1>
-      <p>Congrats, you've been selected to get to know me better. It's four questions and takes about a minute.</p>
+      <p>Congrats, you've been selected to get to know me better. It's <span id="qcount">a few</span> questions and takes about a minute.</p>
       <p class="note">Please answer honestly. Responses will be used against you (affectionately).</p>
       <button class="btn wide" id="start" type="button">Begin onboarding</button>
     </section>
@@ -154,18 +154,6 @@
       }
     },
     {
-      key: "Food talk", type: "slider",
-      title: "How long can I talk about food before you want to leave?",
-      lo: "5 minutes", hi: "Until the check arrives, and after",
-      reveal: function (v) {
-        if (v < 34) return "Mercy. Ishaan will try to keep it to one (1) paragraph.";
-        if (v < 67) return "Fair. Ishaan will stop at the dessert menu.";
-        return "Brave. Please bring snacks and a pillow.";
-      },
-      readout: function (v) { return v < 34 ? "Short and sweet" : (v < 67 ? "Reasonable" : "Send help"); },
-      answer: function (v) { return v < 34 ? "short and sweet" : (v < 67 ? "reasonable" : "send help"); }
-    },
-    {
       key: "DJ name", type: "text", skip: false,
       title: "Pick my DJ name.",
       placeholder: "DJ ...",
@@ -184,6 +172,8 @@
   ];
 
   // ---- State ---------------------------------------------------------------
+  var WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+  $("qcount").textContent = WORDS[QUESTIONS.length] || String(QUESTIONS.length);
   var idx = -1, state = "answering", picked = null, record = [];
   var dots = $("dots");
   QUESTIONS.forEach(function () { dots.appendChild(document.createElement("i")); });
