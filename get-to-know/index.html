@@ -161,6 +161,24 @@
       answer: function (t) { return t; }
     },
     {
+      key: "Cries at", type: "single",
+      title: "Ishaan cries at:",
+      opts: ["A slow violin solo", "Dog videos", "A Drake song at 1 AM", "Never. Ishaan is a big boy."],
+      reveal: function (i) {
+        return i === 3 ? "Correct. Never. Ishaan is a big boy. Please do not ask about the dog video."
+          : "Wrong. The answer is never. Ishaan is a big boy. (He had something in his eye once. It was dust.)";
+      }
+    },
+    {
+      key: "Love language", type: "single",
+      title: "Ishaan's love language is:",
+      opts: ["Acts of service", "Words of affirmation", "Quality time", "Drake lyrics at 2 AM", "All of the above"],
+      reveal: function (i) {
+        return i === 4 ? "Correct. All of the above. Ishaan is a loverboy."
+          : "Close, but the answer is all of the above. Ishaan is a loverboy.";
+      }
+    },
+    {
       key: "Biggest fear", type: "single",
       title: "Ishaan's biggest fear is:",
       opts: ["Spiders", "Public speaking", "A woman who is right and knows it", "Wasting a good meal"],
@@ -168,6 +186,18 @@
         return i === 2 ? "Correct. Especially one who also orders better than him."
           : "Nice try. The correct answer is a woman who is right and knows it. Especially one who also orders better than him.";
       }
+    },
+    {
+      key: "Staring", type: "slider",
+      title: "Final question: what are the odds Ishaan stares at you the entire date?",
+      lo: "Never, he's a gentleman", hi: "Constantly. He's terrible at hiding it",
+      reveal: function (v) {
+        if (v < 34) return "Wrong. Ishaan will try to be a gentleman and fail within four minutes.";
+        if (v < 67) return "Getting warmer. Add a few percent for when you laugh.";
+        return "Correct. He will pretend to look at the menu. He will not be looking at the menu.";
+      },
+      readout: function (v) { return v < 34 ? "Wishful thinking" : (v < 67 ? "Getting warmer" : "Correct"); },
+      answer: function (v) { return v < 34 ? "wishful thinking" : (v < 67 ? "getting warmer" : "constantly"); }
     }
   ];
 
