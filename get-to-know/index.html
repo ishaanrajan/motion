@@ -175,11 +175,10 @@
       key: "Love language", type: "multi",
       title: "Ishaan's love language is:",
       hint: "Select all that apply.",
-      opts: ["Acts of service", "Words of affirmation", "Quality time", "Drake lyrics at 2 AM", "All of the above"],
-      correct: [0, 1, 2, 3, 4],
-      reveal: function (sel) {
-        return sel.length >= 4 ? "Correct. All of the above. Ishaan is a loverboy."
-          : "Close, but the answer is all of the above. Ishaan is a loverboy.";
+      opts: ["Acts of service", "Words of affirmation", "Quality time", "Drake lyrics at 2 AM"],
+      correct: [0, 1, 2, 3],
+      reveal: function () {
+        return "Trick question. The answer is all of the above, and it wasn't even on the list. Ishaan is a loverboy.";
       },
       answer: function (sel, opts) { return sel.map(function (i) { return opts[i]; }).join(" + "); }
     },
