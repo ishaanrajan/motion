@@ -66,6 +66,8 @@
   .opt[aria-pressed="true"] { background: var(--sun); }
   .opt[aria-pressed="true"] .box { background: var(--tomato); }
   .opts.locked .opt { cursor: default; }
+  .opt.right { background: var(--mint); }
+  .opt.right .box { background: #2fbf71; }
 
   .slider-wrap { margin: 18px 4px 6px; }
   input[type="range"] { width: 100%; accent-color: var(--tomato); height: 34px; }
@@ -148,6 +150,7 @@
       key: "Violin", type: "single",
       title: "Ishaan disappointed his parents by studying engineering. They really wanted him to be a:",
       opts: ["Classical violinist", "Doctor", "Lawyer", "Professional cyclist"],
+      correct: [0],
       reveal: function (i) {
         return i === 0 ? "Correct. A classical violinist. The family group chat has not recovered."
           : "Nope. A classical violinist. The violin lessons were not for fun. The family group chat has not recovered.";
@@ -163,28 +166,31 @@
     {
       key: "Cries at", type: "single",
       title: "Ishaan cries at:",
-      opts: ["A slow violin solo", "Dog videos", "A Drake song at 1 AM", "Never. Ishaan is a big boy."],
-      reveal: function (i) {
-        return i === 3 ? "Correct. Never. Ishaan is a big boy. Please do not ask about the dog video."
-          : "Wrong. The answer is never. Ishaan is a big boy. (He had something in his eye once. It was dust.)";
+      opts: ["A slow violin solo", "Dog videos", "A Drake song at 1 AM", "His own DJ set"],
+      reveal: function () {
+        return "Wrong. The answer is never. Ishaan is a big boy. (He had something in his eye once. It was dust.)";
       }
     },
     {
-      key: "Love language", type: "single",
+      key: "Love language", type: "multi",
       title: "Ishaan's love language is:",
+      hint: "Select all that apply.",
       opts: ["Acts of service", "Words of affirmation", "Quality time", "Drake lyrics at 2 AM", "All of the above"],
-      reveal: function (i) {
-        return i === 4 ? "Correct. All of the above. Ishaan is a loverboy."
+      correct: [0, 1, 2, 3, 4],
+      reveal: function (sel) {
+        return sel.length >= 4 ? "Correct. All of the above. Ishaan is a loverboy."
           : "Close, but the answer is all of the above. Ishaan is a loverboy.";
-      }
+      },
+      answer: function (sel, opts) { return sel.map(function (i) { return opts[i]; }).join(" + "); }
     },
     {
       key: "Biggest fear", type: "single",
       title: "Ishaan's biggest fear is:",
-      opts: ["Spiders", "Public speaking", "A woman who is right and knows it", "Wasting a good meal"],
+      opts: ["Spiders", "Public speaking", "Brown girls", "Wasting a good meal"],
+      correct: [2],
       reveal: function (i) {
-        return i === 2 ? "Correct. Especially one who also orders better than him."
-          : "Nice try. The correct answer is a woman who is right and knows it. Especially one who also orders better than him.";
+        return i === 2 ? "Correct. Brown girls. Ishaan is terrified. Please be gentle."
+          : "Nope. Brown girls. Ishaan is terrified. Please be gentle.";
       }
     },
     {
@@ -303,7 +309,12 @@
     $("reveal").hidden = false;
     $("skipwrap").hidden = true;
     var list = $("optlist");
-    if (list) { list.classList.add("locked"); }
+    if (list) {
+      list.classList.add("locked");
+      if (q.correct) {
+        Array.prototype.forEach.call(list.children, function (c, ci) { if (q.correct.indexOf(ci) !== -1) c.classList.add("right"); });
+      }
+    }
     var inputs = $("qbody").querySelectorAll("input, textarea");
     Array.prototype.forEach.call(inputs, function (el) { el.disabled = true; });
     state = "revealed";
