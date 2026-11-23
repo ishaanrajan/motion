@@ -167,8 +167,10 @@
       key: "Cries at", type: "single",
       title: "Ishaan cries at:",
       opts: ["A slow violin solo", "Dog videos", "A Drake song at 1 AM", "His own DJ set"],
-      reveal: function () {
-        return "Wrong. The answer is never. Ishaan is a big boy. (He had something in his eye once. It was dust.)";
+      correct: [3],
+      reveal: function (i) {
+        return i === 3 ? "Correct. His own DJ set. Otherwise, never. Ishaan is a big boy."
+          : "Wrong. Ishaan never cries. He is a big boy. The only exception is his own DJ set.";
       }
     },
     {
