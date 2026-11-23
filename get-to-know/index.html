@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ishaan Onboarding Survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=DM+Sans:wght@500;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  /* Layout idea: a single phone-width HR-style form card, one question per screen, sky-blue backdrop with sticker-yellow accents. */
+  :root {
+    --sky: #cfe8ff;
+    --paper: #ffffff;
+    --ink: #14213d;
+    --sun: #ffd84d;
+    --tomato: #ff5a36;
+    --mint: #bdf0d6;
+    --display: "Fredoka", "Arial Rounded MT Bold", system-ui, sans-serif;
+    --body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --hand: "Caveat", "Comic Sans MS", cursive;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--sky);
+    background-image: radial-gradient(circle at 15% 10%, #e8f4ff 0, transparent 40%), radial-gradient(circle at 90% 95%, #b5dbff 0, transparent 45%);
+    color: var(--ink);
+    font-family: var(--body);
+    font-weight: 500;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .app { min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px 16px; }
+  .card { width: 100%; max-width: 440px; background: var(--paper); border: 3px solid var(--ink); border-radius: 22px; box-shadow: 6px 6px 0 var(--ink); padding: 18px 20px 20px; position: relative; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; border-bottom: 2px dashed var(--ink); padding-bottom: 10px; margin-bottom: 14px; }
+  .dots { display: flex; gap: 5px; }
+  .dots i { width: 12px; height: 12px; border: 2px solid var(--ink); border-radius: 50%; background: #fff; display: block; }
+  .dots i.done { background: var(--tomato); }
+  .dots i.now { background: var(--sun); }
+
+  .screen[hidden] { display: none; }
+  .screen { animation: fade .3s ease both; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  .sticker { position: absolute; top: -22px; right: 16px; width: 56px; height: 56px; transform: rotate(10deg); }
+  h1 { font-family: var(--display); font-weight: 700; font-size: 1.7rem; line-height: 1.1; margin: 0 0 8px; text-wrap: balance; }
+  h1 .hl { background: linear-gradient(transparent 55%, var(--sun) 55%); }
+  p { margin: 0 0 12px; line-height: 1.45; }
+  .note { font-family: var(--hand); font-size: 1.35rem; line-height: 1.1; margin: 4px 0 12px; color: var(--tomato); }
+  .qno { font-family: var(--hand); font-size: 1.3rem; color: var(--tomato); margin: 0; }
+  .hint { font-size: .85rem; opacity: .75; margin: -2px 0 10px; }
+
+  button { font: inherit; color: inherit; cursor: pointer; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--tomato); outline-offset: 3px; }
+  .btn { border: 3px solid var(--ink); background: var(--tomato); color: #fff; font-family: var(--display); font-weight: 600; font-size: 1.1rem; padding: 11px 24px; border-radius: 999px; box-shadow: 3px 3px 0 var(--ink); }
+  .btn:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn:disabled { background: #dfe6f0; color: #8a97ab; border-color: #8a97ab; box-shadow: 3px 3px 0 #8a97ab; cursor: not-allowed; }
+  .btn.wide { width: 100%; margin-top: 12px; }
+  .btn.ghost { background: #fff; color: var(--ink); font-family: var(--body); font-weight: 700; font-size: .95rem; padding: 9px 16px; box-shadow: 2px 2px 0 var(--ink); }
+
+  .opts { display: grid; gap: 9px; margin: 10px 0 4px; }
+  .opt { text-align: left; width: 100%; background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 11px 14px; font-weight: 700; font-size: .98rem; box-shadow: 2px 2px 0 var(--ink); display: flex; gap: 10px; align-items: center; }
+  .opt .box { flex: none; width: 22px; height: 22px; border: 3px solid var(--ink); border-radius: 7px; background: #fff; }
+  .opt.radio .box { border-radius: 50%; }
+  .opt[aria-pressed="true"] { background: var(--sun); }
+  .opt[aria-pressed="true"] .box { background: var(--tomato); }
+  .opts.locked .opt { cursor: default; }
+
+  .slider-wrap { margin: 18px 4px 6px; }
+  input[type="range"] { width: 100%; accent-color: var(--tomato); height: 34px; }
+  .ends { display: flex; justify-content: space-between; gap: 10px; font-size: .8rem; font-weight: 700; }
+  .readout { font-family: var(--display); font-weight: 600; font-size: 1.15rem; text-align: center; margin-bottom: 4px; min-height: 1.5em; }
+
+  textarea { width: 100%; border: 3px solid var(--ink); border-radius: 14px; padding: 10px 12px; font: inherit; font-weight: 500; background: #fff; color: var(--ink); resize: none; margin-top: 8px; }
+
+  .bubble { margin-top: 12px; background: var(--mint); border: 3px solid var(--ink); border-radius: 16px; padding: 10px 14px; font-weight: 700; position: relative; }
+  .bubble::before { content: ""; position: absolute; top: -11px; left: 22px; width: 16px; height: 16px; background: var(--mint); border-left: 3px solid var(--ink); border-top: 3px solid var(--ink); transform: rotate(45deg); }
+
+  .score { font-family: var(--display); font-weight: 700; font-size: 3rem; line-height: 1; margin: 4px 0; }
+  .meter { height: 18px; border: 3px solid var(--ink); border-radius: 999px; background: #fff; overflow: hidden; }
+  .meter i { display: block; height: 100%; width: 0; background: var(--tomato); transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
+  .receipt { margin: 14px 0 4px; padding: 12px 14px; background: #fff; border: 2px dashed var(--ink); border-radius: 14px; font-size: .88rem; line-height: 1.6; }
+  .receipt b { font-weight: 700; }
+  .cc { font-size: .8rem; opacity: .8; margin-top: 10px; }
+
+  @media (prefers-reduced-motion: reduce) { .screen { animation: none; } .meter i { transition: none; } }
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="card">
+    <svg class="sticker" viewBox="0 0 60 60" aria-hidden="true">
+      <circle cx="30" cy="30" r="24" fill="#ffd84d" stroke="#14213d" stroke-width="3.5"/>
+      <circle cx="22" cy="26" r="3.2" fill="#14213d"/><circle cx="38" cy="26" r="3.2" fill="#14213d"/>
+      <path d="M20 36q10 10 20 0" fill="none" stroke="#14213d" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="16" cy="34" r="3.5" fill="#ff9d8a"/><circle cx="44" cy="34" r="3.5" fill="#ff9d8a"/>
+    </svg>
+
+    <div class="top"><span>Form 1-A &middot; Ishaan Onboarding</span><span class="dots" id="dots" aria-hidden="true"></span></div>
+
+    <section class="screen" id="intro">
+      <h1>Welcome to the <span class="hl">Ishaan Onboarding Survey</span>.</h1>
+      <p>Congrats, you've been selected to get to know me better. It's six questions and takes about two minutes.</p>
+      <p class="note">Please answer honestly. Responses will be used against you (affectionately).</p>
+      <button class="btn wide" id="start" type="button">Begin onboarding</button>
+    </section>
+
+    <section class="screen" id="q" hidden>
+      <p class="qno" id="qno"></p>
+      <h1 id="qtitle"></h1>
+      <p class="hint" id="qhint"></p>
+      <div id="qbody"></div>
+      <div class="bubble" id="reveal" hidden></div>
+      <button class="btn wide" id="action" type="button" disabled>Lock it in</button>
+      <p class="cc" id="skipwrap" hidden><button class="btn ghost" id="skip" type="button">I plead the fifth</button></p>
+    </section>
+
+    <section class="screen" id="end" hidden>
+      <h1>Onboarding <span class="hl">complete</span>.</h1>
+      <p>Your compatibility report is ready.</p>
+      <div class="score" id="score">0%</div>
+      <div class="meter"><i id="bar"></i></div>
+      <p class="cc">Margin of error: Ishaan's sense of direction.</p>
+      <div class="receipt" id="receipt"></div>
+      <p class="note">Heads up: Ishaan gets a notification with your answers. He will act surprised.</p>
+      <textarea id="reply" rows="6" readonly aria-label="Your reply to copy"></textarea>
+      <button class="btn wide" id="copy" type="button">Copy my answers for the DM</button>
+    </section>
+  </div>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  // Push notification to Ishaan's phone through ntfy.sh (same topic as the invite page).
+  var NTFY_TOPIC = "motion-8319882069dfd0aa";
+  function notify(text) {
+    try { fetch("https://ntfy.sh/" + NTFY_TOPIC, { method: "POST", body: text, keepalive: true }).catch(function () {}); } catch (e) {}
+  }
+
+  function $(id) { return document.getElementById(id); }
+
+  // ---- The questions -------------------------------------------------------
+  var QUESTIONS = [
+    {
+      key: "Saturday morning", type: "multi",
+      title: "It's Saturday morning. What am I most likely doing?",
+      hint: "Select all that apply.",
+      opts: [
+        "Sleeping in until noon",
+        "Cycling up a hill for no reason",
+        "Hunting for a home-cooked meal no tourist has found",
+        "Remixing something nobody asked for"
+      ],
+      reveal: function (sel) {
+        if (sel.indexOf(0) !== -1) return "Sleeping in? Bold of you. Ishaan's alarm has never been consulted.";
+        if (sel.length === 3) return "Perfect score. Suspiciously perfect. Do you read my diary?";
+        return "Partial credit. The right answer is every option except the first.";
+      },
+      answer: function (sel, opts) { return sel.map(function (i) { return opts[i]; }).join(" + "); }
+    },
+    {
+      key: "Trek", type: "single",
+      title: "What would I trek five days for?",
+      opts: ["A really good view", "A plate of dal in a stranger's kitchen", "Both, obviously"],
+      reveal: function (i) {
+        return i === 2 ? "Correct. Ishaan would also accept a dal with a view." : (i === 1 ? "Close. Add a view and you're at full marks." : "Nice, but a view with no snack at the end? Ishaan sulks.");
+      }
+    },
+    {
+      key: "Food talk", type: "slider",
+      title: "How long can I talk about food before you want to leave?",
+      lo: "5 minutes", hi: "Until the check arrives, and after",
+      reveal: function (v) {
+        if (v < 34) return "Mercy. Ishaan will try to keep it to one (1) paragraph.";
+        if (v < 67) return "Fair. Ishaan will stop at the dessert menu.";
+        return "Brave. Please bring snacks and a pillow.";
+      },
+      readout: function (v) { return v < 34 ? "Short and sweet" : (v < 67 ? "Reasonable" : "Send help"); },
+      answer: function (v) { return v < 34 ? "short and sweet" : (v < 67 ? "reasonable" : "send help"); }
+    },
+    {
+      key: "DJ name", type: "single",
+      title: "Pick my DJ name.",
+      opts: ["Afro House Arrest", "DJ Bike Lane", "Ishaan.mp3", "Sir Scoops-a-Lot"],
+      reveal: function () { return "Excellent choice. It's printed on the business cards now. The cards are very small and very legal."; }
+    },
+    {
+      key: "Court food", type: "text",
+      title: "Your turn. What's the one food you'd defend in court?",
+      placeholder: "Your honor, it's...",
+      reveal: function (t) {
+        return t ? "Noted. Ishaan will test this claim personally and report back to the jury." : "Pleading the fifth. Ishaan respects it and will order for you.";
+      },
+      answer: function (t) { return t || "pleaded the fifth"; }
+    },
+    {
+      key: "Rating", type: "single",
+      title: "Last one. How's this going so far?",
+      opts: ["Cute, keep going", "Suspiciously charming", "Ishaan owes me ice cream"],
+      reveal: function () { return "Noted. Ishaan will make good on all three."; }
+    }
+  ];
+
+  // ---- State ---------------------------------------------------------------
+  var idx = -1, state = "answering", picked = null, record = [];
+  var dots = $("dots");
+  QUESTIONS.forEach(function () { dots.appendChild(document.createElement("i")); });
+  function paintDots() {
+    Array.prototype.forEach.call(dots.children, function (d, i) {
+      d.className = i < idx ? "done" : (i === idx ? "now" : "");
+    });
+  }
+  function show(id) {
+    ["intro", "q", "end"].forEach(function (s) { $(s).hidden = (s !== id); });
+    window.scrollTo(0, 0);
+  }
+
+  // ---- Rendering a question ------------------------------------------------
+  function render() {
+    var q = QUESTIONS[idx];
+    state = "answering";
+    picked = null;
+    paintDots();
+    $("qno").textContent = "Question " + (idx + 1) + " of " + QUESTIONS.length;
+    $("qtitle").textContent = q.title;
+    $("qhint").textContent = q.hint || "";
+    $("qhint").hidden = !q.hint;
+    $("reveal").hidden = true;
+    $("skipwrap").hidden = (q.type !== "text");
+    var action = $("action");
+    action.textContent = "Lock it in";
+    action.disabled = true;
+    var body = $("qbody");
+    body.innerHTML = "";
+
+    if (q.type === "single" || q.type === "multi") {
+      var list = document.createElement("div");
+      list.className = "opts";
+      list.id = "optlist";
+      picked = q.type === "multi" ? [] : null;
+      q.opts.forEach(function (label, i) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "opt " + (q.type === "single" ? "radio" : "check");
+        b.id = "opt-" + idx + "-" + i;
+        b.setAttribute("aria-pressed", "false");
+        b.innerHTML = '<span class="box"></span><span></span>';
+        b.lastChild.textContent = label;
+        b.addEventListener("click", function () {
+          if (state !== "answering") return;
+          if (q.type === "single") {
+            picked = i;
+            Array.prototype.forEach.call(list.children, function (c, ci) { c.setAttribute("aria-pressed", ci === i ? "true" : "false"); });
+            action.disabled = false;
+          } else {
+            var at = picked.indexOf(i);
+            if (at === -1) { picked.push(i); } else { picked.splice(at, 1); }
+            b.setAttribute("aria-pressed", at === -1 ? "true" : "false");
+            action.disabled = picked.length === 0;
+          }
+        });
+        list.appendChild(b);
+      });
+      body.appendChild(list);
+    } else if (q.type === "slider") {
+      var wrap = document.createElement("div");
+      wrap.className = "slider-wrap";
+      wrap.innerHTML = '<div class="readout" id="readout">Drag me</div><input type="range" id="slider" min="0" max="100" value="50" aria-label="Answer"><div class="ends"><span></span><span></span></div>';
+      wrap.querySelector(".ends").children[0].textContent = q.lo;
+      wrap.querySelector(".ends").children[1].textContent = q.hi;
+      body.appendChild(wrap);
+      var s = wrap.querySelector("#slider");
+      var moved = function () { picked = Number(s.value); $("readout").textContent = q.readout(picked); action.disabled = false; };
+      s.addEventListener("input", moved);
+      s.addEventListener("change", moved);
+    } else if (q.type === "text") {
+      var ta = document.createElement("textarea");
+      ta.id = "free";
+      ta.rows = 2;
+      ta.maxLength = 80;
+      ta.placeholder = q.placeholder;
+      ta.setAttribute("aria-label", q.title);
+      ta.addEventListener("input", function () { picked = ta.value.trim(); action.disabled = !picked; });
+      body.appendChild(ta);
+      picked = "";
+    }
+  }
+
+  function lockIn(forcedSkip) {
+    var q = QUESTIONS[idx];
+    var value = picked;
+    if (q.type === "text" && forcedSkip) value = "";
+    var msg = q.reveal(value);
+    var shown;
+    if (q.type === "single") shown = q.opts[value];
+    else if (q.type === "multi") shown = q.answer(value, q.opts);
+    else shown = q.answer ? q.answer(value) : String(value);
+    record.push({ key: q.key, value: shown });
+    $("reveal").textContent = msg;
+    $("reveal").hidden = false;
+    $("skipwrap").hidden = true;
+    var list = $("optlist");
+    if (list) { list.classList.add("locked"); }
+    var inputs = $("qbody").querySelectorAll("input, textarea");
+    Array.prototype.forEach.call(inputs, function (el) { el.disabled = true; });
+    state = "revealed";
+    var action = $("action");
+    action.disabled = false;
+    action.textContent = idx === QUESTIONS.length - 1 ? "See my compatibility report" : "Next question";
+  }
+
+  $("start").addEventListener("click", function () { idx = 0; show("q"); render(); });
+  $("action").addEventListener("click", function () {
+    if (state === "answering") { lockIn(false); return; }
+    if (idx < QUESTIONS.length - 1) { idx++; render(); } else { finish(); }
+  });
+  $("skip").addEventListener("click", function () { if (state === "answering") lockIn(true); });
+
+  // ---- Finish ---------------------------------------------------------------
+  function finish() {
+    idx = QUESTIONS.length;
+    paintDots();
+    show("end");
+    var rec = $("receipt");
+    rec.innerHTML = "";
+    record.forEach(function (r) {
+      var line = document.createElement("div");
+      var b = document.createElement("b");
+      b.textContent = r.key + ": ";
+      line.appendChild(b);
+      line.appendChild(document.createTextNode(r.value));
+      rec.appendChild(line);
+    });
+    var text = "Ishaan Onboarding Survey: complete. Compatibility: 94%.\n" + record.map(function (r) { return r.key + ": " + r.value; }).join("\n");
+    $("reply").value = text;
+    notify(text);
+    var bar = $("bar"), score = $("score"), n = 0;
+    requestAnimationFrame(function () { bar.style.width = "94%"; });
+    var t = setInterval(function () {
+      n += 2;
+      if (n >= 94) { n = 94; clearInterval(t); }
+      score.textContent = n + "%";
+    }, 22);
+  }
+
+  $("copy").addEventListener("click", function () {
+    var ta = $("reply"), btn = $("copy");
+    function done() { btn.textContent = "Copied. Now paste it in the DM"; }
+    function fallback() {
+      ta.focus(); ta.select();
+      try { if (document.execCommand("copy")) { done(); return; } } catch (e) {}
+      btn.textContent = "Press and hold the text to copy it";
+    }
+    try { navigator.clipboard.writeText(ta.value).then(done, fallback); } catch (e) { fallback(); }
+  });
+})();
+</script>
+</body>
+</html>
